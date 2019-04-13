@@ -1,0 +1,6 @@
+keil/*.uvguix.*
+keil/DebugConfig/
+keil/*.scvd
+keil/JLinkLog.txt
+keil/JLinkSettings.ini
+output/
