@@ -9,7 +9,8 @@
  *   Compiler:      ARMCC
  ***************************************************************************************************
  *   File:          bsp_ili9341.c
- *   Description:   
+ *   Description:   see items: https://blablacode.ru/mikrokontrollery/490
+ *                             http://we.easyelectronics.ru/lcd_gfx/shrifty-s-glcd-font-creator-na-kolenke.html
  *
  ***************************************************************************************************
  *   History:       13.04.2019 - file created
@@ -181,27 +182,6 @@ static uint8_t _lcd_get(void)
     return result;
 }
 
-void _lcd_set_rect(const rect_t * _rect)
-{
-    static uint8_t column[6] = {5, ILI9341_COLUMN_ADDR};
-    static uint8_t row   [6] = {5, ILI9341_PAGE_ADDR};
-    
-    if (_rect == NULL) return;
-    
-    column[2] = _rect->x1 >> 8;
-    column[3] = _rect->x1 & 0xFF;
-    column[4] = _rect->x2 >> 8;
-    column[5] = _rect->x2 & 0xFF;
-    
-    row[2] = _rect->y1 >> 8;
-    row[3] = _rect->y1 & 0xFF;
-    row[4] = _rect->y2 >> 8;
-    row[5] = _rect->y2 & 0xFF;
-    
-    lcd_send_cmd(column);
-    lcd_send_cmd(row);
-}
-
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
@@ -227,11 +207,32 @@ void lcd_send_cmd(const uint8_t * _data)
     }
 }
 
+void lcd_set_rect(const rect_t * _rect)
+{
+    static uint8_t column[6] = {5, ILI9341_COLUMN_ADDR};
+    static uint8_t row   [6] = {5, ILI9341_PAGE_ADDR};
+    
+    if (_rect == NULL) return;
+    
+    column[2] = _rect->x1 >> 8;
+    column[3] = _rect->x1 & 0xFF;
+    column[4] = _rect->x2 >> 8;
+    column[5] = _rect->x2 & 0xFF;
+    
+    row[2] = _rect->y1 >> 8;
+    row[3] = _rect->y1 & 0xFF;
+    row[4] = _rect->y2 >> 8;
+    row[5] = _rect->y2 & 0xFF;
+    
+    lcd_send_cmd(column);
+    lcd_send_cmd(row);
+
+    lcd_send_cmd((const uint8_t []){1, ILI9341_GRAM});
+}
+
 void lcd_fill_rect(const rect_t * _rect, const lcd_color_t _color)
 {
-    _lcd_set_rect(_rect);
-    
-    lcd_send_cmd((const uint8_t []){1, ILI9341_GRAM});
+    lcd_set_rect(_rect);
     
     for(lcd_bmp_size_t i = (lcd_bmp_size_t)(_rect->x2 - _rect->x1) * (_rect->y2 - _rect->y1);
         i > 0; i--)
@@ -242,9 +243,7 @@ void lcd_fill_rect(const rect_t * _rect, const lcd_color_t _color)
 
 void lcd_draw_bmp(const rect_t * _rect, const lcd_color_t * _bmp)
 {
-    _lcd_set_rect(_rect);
-    
-    lcd_send_cmd((const uint8_t []){1, ILI9341_GRAM});
+    lcd_set_rect(_rect);
     
     lcd_send_data((uint8_t *)_bmp,
                   (lcd_bmp_size_t)(_rect->x2 - _rect->x1) *
@@ -271,7 +270,13 @@ void lcd_init(void)
     lcd_send_cmd((const uint8_t []){2 , ILI9341_POWER2      , 0x10});
     lcd_send_cmd((const uint8_t []){3 , ILI9341_VCOM1       , 0x3E, 0x28});
     lcd_send_cmd((const uint8_t []){2 , ILI9341_VCOM2       , 0x86});
+
+    //-- pixel orientation and draw direction
     lcd_send_cmd((const uint8_t []){2 , ILI9341_MAC         , 0x48});
+    /* MY MX MV ML BGR MH 0 0
+     *  0  1  0  0   1  0 0 0 - 0x48 - vertical orientation, top-left start point
+     */
+
     lcd_send_cmd((const uint8_t []){2 , ILI9341_PIXEL_FORMAT, 0x55});
     lcd_send_cmd((const uint8_t []){3 , ILI9341_FRC         , 0x00, 0x18});
     lcd_send_cmd((const uint8_t []){4 , ILI9341_DFC         , 0x08, 0x82, 0x27});

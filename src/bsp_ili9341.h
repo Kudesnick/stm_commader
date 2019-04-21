@@ -16,6 +16,8 @@
  *
  **************************************************************************************************/
 
+#pragma once
+
 /*
 Nucleo-64 pinout
 
@@ -115,6 +117,7 @@ typedef uint16_t lcd_color_t;
 
 void lcd_send_data(const uint8_t * _data, const lcd_bmp_size_t _size);
 void lcd_send_cmd(const uint8_t * _data);
+void lcd_set_rect(const rect_t * _rect);
 void lcd_fill_rect(const rect_t * _rect, const lcd_color_t _color);
 void lcd_draw_bmp(const rect_t * _rect, const lcd_color_t * _bmp);
 void lcd_init(void);
