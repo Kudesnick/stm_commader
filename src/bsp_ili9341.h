@@ -115,6 +115,7 @@ typedef uint16_t lcd_color_t;
  *                              PUBLIC FUNCTION PROTOTYPES
  **************************************************************************************************/
 
+lcd_bmp_size_t lcd_get_data_size(const rect_t * _rect);
 void lcd_send_data(const uint8_t * _data, const lcd_bmp_size_t _size);
 void lcd_send_cmd(const uint8_t * _data);
 void lcd_set_rect(const rect_t * _rect);

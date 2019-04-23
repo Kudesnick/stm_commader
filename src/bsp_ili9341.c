@@ -62,9 +62,9 @@ CS          A3          PB0
 #define LCD_PIN_WR GPIOA, 0x01
 #define LCD_PIN_CS GPIOB, 0x00
 
-#define LCD_CMD_WR  (1 << 9 | 1 << 11)
-#define LCD_DATA_WR (1 << 8 | 1 <<  9 | 1 << 11)
-#define LCD_DATA_RD (1 << 8 | 1 << 10 | 1 << 11)
+#define LCD_CMD_WR           (1 <<  9)
+#define LCD_DATA_WR (1 << 8 | 1 <<  9)
+#define LCD_DATA_RD (1 << 8 | 1 << 10)
 
 /***************************************************************************************************
  *                                      PUBLIC TYPES
@@ -186,6 +186,11 @@ static uint8_t _lcd_get(void)
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
+lcd_bmp_size_t lcd_get_data_size(const rect_t * _rect)
+{
+    return (lcd_bmp_size_t)(_rect->x2 - _rect->x1 + 1) * (_rect->y2 - _rect->y1 + 1);
+}
+
 void lcd_send_data(const uint8_t * _data, const lcd_bmp_size_t _size)
 {
     for (lcd_bmp_size_t i = 0; i < _size; i++)
@@ -234,7 +239,7 @@ void lcd_fill_rect(const rect_t * _rect, const lcd_color_t _color)
 {
     lcd_set_rect(_rect);
     
-    for(lcd_bmp_size_t i = (lcd_bmp_size_t)(_rect->x2 - _rect->x1) * (_rect->y2 - _rect->y1);
+    for(lcd_bmp_size_t i = lcd_get_data_size(_rect);
         i > 0; i--)
     {
         lcd_send_data((uint8_t *)&_color, sizeof(_color));
@@ -245,11 +250,7 @@ void lcd_draw_bmp(const rect_t * _rect, const lcd_color_t * _bmp)
 {
     lcd_set_rect(_rect);
     
-    lcd_send_data((uint8_t *)_bmp,
-                  (lcd_bmp_size_t)(_rect->x2 - _rect->x1) *
-                                  (_rect->y2 - _rect->y1) *
-                                  sizeof(lcd_color_t)
-                  );
+    lcd_send_data((uint8_t *)_bmp, lcd_get_data_size(_rect) * sizeof(lcd_color_t));
 }
 
 void lcd_init(void)

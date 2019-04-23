@@ -79,9 +79,9 @@ void font_draw_text(uint8_t _x, uint8_t _y, char * _str)
 {
     if (font != NULL)
     {
-        rect_t rect = {_x, _y, LCD_WIDTH, LCD_HEIGHT};
+        rect_t rect = {_x, _y, font->height_glyph + _y, LCD_WIDTH - 1};
         uint8_t len = strlen(_str);
-        lcd_bmp_size_t max_pixel_cnt = (lcd_bmp_size_t)(LCD_WIDTH - _x) * (LCD_HEIGHT - _y);
+        lcd_bmp_size_t max_pixel_cnt = lcd_get_data_size(&rect);
 
         lcd_bmp_size_t curr_pixel = 0;
 
@@ -92,16 +92,13 @@ void font_draw_text(uint8_t _x, uint8_t _y, char * _str)
             if ((_str[i] >= font->start_code) && (_str[i] <= font->end_code))
             {
                 const uint8_t * pixel_ptr = &(font->p_font[_str[i] - font->start_code]);
-                uint8_t pixel_cnt = font->height_glyph * font->width_glyph;
+                uint8_t pixel_cnt = (font->height_glyph + 1) * (font->width_glyph + 1);
                 uint8_t curr_byte = *pixel_ptr;
 
                 for (uint8_t j = 0; j < pixel_cnt; j++)
                 {
-                    if ((curr_byte & 1) != 0)
-                    {
-                        lcd_send_data((const uint8_t *)((curr_byte & 1) ? &text_cl : &background_cl),
-                                      sizeof(lcd_color_t));
-                    }
+                    lcd_send_data((const uint8_t *)((curr_byte & 1) ? &text_cl : &background_cl),
+                                  sizeof(lcd_color_t));
 
                     if (++curr_pixel >= max_pixel_cnt) return;
 
