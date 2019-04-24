@@ -79,7 +79,7 @@ void font_draw_text(uint8_t _x, uint8_t _y, char * _str)
 {
     if (font != NULL)
     {
-        rect_t rect = {_x, _y, font->height_glyph + _y, LCD_WIDTH - 1};
+        rect_t rect = {_x, _y, font->height_glyph + _x - 1, LCD_WIDTH - 1};
         uint8_t len = strlen(_str);
         lcd_bmp_size_t max_pixel_cnt = lcd_get_data_size(&rect);
 
@@ -91,24 +91,22 @@ void font_draw_text(uint8_t _x, uint8_t _y, char * _str)
         {
             if ((_str[i] >= font->start_code) && (_str[i] <= font->end_code))
             {
-                const uint8_t * pixel_ptr = &(font->p_font[_str[i] - font->start_code]);
-                uint8_t pixel_cnt = (font->height_glyph + 1) * (font->width_glyph + 1);
-                uint8_t curr_byte = *pixel_ptr;
-
-                for (uint8_t j = 0; j < pixel_cnt; j++)
+                const uint8_t * pixel_ptr = &(font->p_font[(uint16_t)(_str[i] - font->start_code) * font->glyph_size]);
+                
+                uint8_t symbol_height_inc = font->height_glyph / 8 +
+                    (((font->height_glyph % 8) > 0) ? 1 : 0);
+                
+                
+                for (uint8_t j = font->width_glyph; j > 0; j--, pixel_ptr += symbol_height_inc)
                 {
-                    lcd_send_data((const uint8_t *)((curr_byte & 1) ? &text_cl : &background_cl),
-                                  sizeof(lcd_color_t));
-
-                    if (++curr_pixel >= max_pixel_cnt) return;
-
-                    if ((j & 7) == 7)
+                    uint32_t curr_byte = *(uint32_t *)pixel_ptr;
+                    
+                    for (uint8_t k = font->height_glyph; k > 0; k--, curr_byte >>= 1)
                     {
-                        curr_byte = *(++pixel_ptr);
-                    }
-                    else
-                    {
-                        curr_byte >>= 1;
+                        lcd_send_data((const uint8_t *)((curr_byte & 1) ? &text_cl : &background_cl),
+                                       sizeof(lcd_color_t));
+
+                        if (++curr_pixel >= max_pixel_cnt) return;
                     }
                 }
             }
