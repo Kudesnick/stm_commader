@@ -8,11 +8,11 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          main.c
+ *   File:          font.c
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       13.04.2019 - file created
+ *   History:       21.04.2019 - file created
  *
  **************************************************************************************************/
 
@@ -20,16 +20,16 @@
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include "bsp_ili9341.h"
 #include "font.h"
-#include "courier_new.h"
+#include "string.h"
+#include "bsp_ili9341.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
 
 /***************************************************************************************************
- *                                      PRIVATE TYPES
+ *                                      PUBLIC TYPES
  **************************************************************************************************/
 
 /***************************************************************************************************
@@ -40,8 +40,16 @@
  *                                       PRIVATE DATA
  **************************************************************************************************/
 
+const font_t * font;
+lcd_color_t background_cl;
+lcd_color_t text_cl;
+
 /***************************************************************************************************
  *                                       PUBLIC DATA
+ **************************************************************************************************/
+
+/***************************************************************************************************
+ *                              PUBLIC FUNCTION PROTOTYPES
  **************************************************************************************************/
 
 /***************************************************************************************************
@@ -60,18 +68,51 @@
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-int main(void)
+void font_set_attr(const font_t * _font, const lcd_color_t _background_cl, const lcd_color_t _text_cl)
 {
-    lcd_init();
+    font = _font;
+    background_cl = _background_cl;
+    text_cl = _text_cl;
+};
 
-    for(;;)
+void font_draw_text(uint8_t _x, uint8_t _y, char * _str)
+{
+    if (font != NULL)
     {
-        lcd_fill_rect(&(const rect_t){0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1}, 0xFF);
-        font_set_attr(&font_courier_new, 0x0000, 0xFFFF);
-        font_draw_text(16, 8, "AAAAAAA Hello word!!! Привет!!!");
-        for(;;);
+        rect_t rect = {_x, _y, font->height_glyph + _x - 1, LCD_WIDTH - 1};
+        uint8_t len = strlen(_str);
+        lcd_bmp_size_t max_pixel_cnt = lcd_get_data_size(&rect);
+
+        lcd_bmp_size_t curr_pixel = 0;
+
+        lcd_set_rect(&rect);
+
+        for(uint8_t i = 0; i < len; i++)
+        {
+            if ((_str[i] >= font->start_code) && (_str[i] <= font->end_code))
+            {
+                const uint8_t * pixel_ptr = &(font->p_font[(uint16_t)(_str[i] - font->start_code) * font->glyph_size]);
+                
+                uint8_t symbol_height_inc = font->height_glyph / 8 +
+                    (((font->height_glyph % 8) > 0) ? 1 : 0);
+                
+                
+                for (uint8_t j = font->width_glyph; j > 0; j--, pixel_ptr += symbol_height_inc)
+                {
+                    uint32_t curr_byte = *(uint32_t *)pixel_ptr;
+                    
+                    for (uint8_t k = font->height_glyph; k > 0; k--, curr_byte >>= 1)
+                    {
+                        lcd_send_data((const uint8_t *)((curr_byte & 1) ? &text_cl : &background_cl),
+                                       sizeof(lcd_color_t));
+
+                        if (++curr_pixel >= max_pixel_cnt) return;
+                    }
+                }
+            }
+        }
     }
-}
+};
 
 /***************************************************************************************************
  *                                       END OF FILE
