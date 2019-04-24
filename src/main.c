@@ -68,7 +68,8 @@ int main(void)
     {
         lcd_fill_rect(&(const rect_t){0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1}, 0xFF);
         font_set_attr(&font_courier_new, 0x0000, 0xFFFF);
-        font_draw_text(8, 8, "Hello word! Привет!");
+        font_draw_text(16, 8, "AAAAAAA Hello word!!! Привет!!!");
+        for(;;);
     }
 }
 

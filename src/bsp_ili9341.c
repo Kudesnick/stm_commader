@@ -273,9 +273,10 @@ void lcd_init(void)
     lcd_send_cmd((const uint8_t []){2 , ILI9341_VCOM2       , 0x86});
 
     //-- pixel orientation and draw direction
-    lcd_send_cmd((const uint8_t []){2 , ILI9341_MAC         , 0x48});
+    lcd_send_cmd((const uint8_t []){2 , ILI9341_MAC         , 0xD4});
     /* MY MX MV ML BGR MH 0 0
      *  0  1  0  0   1  0 0 0 - 0x48 - vertical orientation, top-left start point
+     *  1  1  0  1   0  1 0 0 - 0xD4 - horisontal orientation, top-left start point
      */
 
     lcd_send_cmd((const uint8_t []){2 , ILI9341_PIXEL_FORMAT, 0x55});
