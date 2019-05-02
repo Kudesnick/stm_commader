@@ -179,6 +179,14 @@ void bsp_keyboard_init(void)
     }
 };
 
+void bsp_callback_init(key_t _key_num, key_event_t _event, void(* _func)(const key_event_t, const key_t))
+{
+    if (_key_num < KEY_CNT && _event < KEY_EVENT_CNT)
+    {
+        keys[_key_num].events[_event] = _func;
+    }
+}
+
 /***************************************************************************************************
  *                                       END OF FILE
  **************************************************************************************************/
