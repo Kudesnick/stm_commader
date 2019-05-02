@@ -402,6 +402,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\font.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\bsp_keyboard.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

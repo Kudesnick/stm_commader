@@ -40,12 +40,8 @@ CS          A3          PB0
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include "RTE_Components.h"
-#include CMSIS_device_header
-
 #include <stdint.h>
 #include <stdio.h>
-#include "GPIO_STM32F10x.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
