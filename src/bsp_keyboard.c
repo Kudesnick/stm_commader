@@ -1,5 +1,5 @@
 /***************************************************************************************************
- *   Project:     
+ *   Project:       stm commander
  *   Author:        Stulov Tikhon (kudesnick@inbox.ru)
  ***************************************************************************************************
  *   Distribution:  
@@ -8,92 +8,45 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          bsp_ili9341.h
+ *   File:          bsp_keyboard.c
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       21.04.2019 - file created
+ *   History:       02.05.2019 - file created
  *
  **************************************************************************************************/
-
-#pragma once
-
-/*
-Nucleo-64 pinout
-
-LCD Shield | Arduino | Nucleo
-D0          D8          PA9
-D1          D9          PC7
-D2          D10         PA6
-D3          D11         PA7
-D4          D4          PB5
-D5          D13         PA5
-D6          D6          PB10
-D7          D7          PA8
-RS          A2          PA4
-RD          A0          PA0
-WR          A1          PA1
-CS          A3          PB0
-*/
 
 /***************************************************************************************************
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
 #include <stdint.h>
-#include <stdio.h>
+#include <string.h>
+
+#include "bsp_keyboard.h"
+
+#include "RTE_Components.h"
+#include CMSIS_device_header
+#include "GPIO_STM32F10x.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
 
-//-- lcd depend defines
+#define KEY_UP_PIN     GPIOA, 0x06
+#define KEY_DOWN_PIN   GPIOB, 0x01
+#define KEY_LEFT_PIN   GPIOA, 0x07
+#define KEY_RIGHT_PIN  GPIOB, 0x02
+#define KEY_CENTER_PIN GPIOA, 0x05
 
-#define LCD_WIDTH       240
-#define LCD_HEIGHT      320
-
-#define ILI9341_RESET                0x01
-#define ILI9341_SLEEP_OUT            0x11
-#define ILI9341_GAMMA                0x26
-#define ILI9341_DISPLAY_OFF          0x28
-#define ILI9341_DISPLAY_ON           0x29
-#define ILI9341_COLUMN_ADDR          0x2A
-#define ILI9341_PAGE_ADDR            0x2B
-#define ILI9341_GRAM                 0x2C
-#define ILI9341_MAC                  0x36
-#define ILI9341_PIXEL_FORMAT         0x3A
-#define ILI9341_WDB                  0x51
-#define ILI9341_WCD                  0x53
-#define ILI9341_RGB_INTERFACE        0xB0
-#define ILI9341_FRC                  0xB1
-#define ILI9341_BPC                  0xB5
-#define ILI9341_DFC                  0xB6
-#define ILI9341_POWER1               0xC0
-#define ILI9341_POWER2               0xC1
-#define ILI9341_VCOM1                0xC5
-#define ILI9341_VCOM2                0xC7
-#define ILI9341_POWERA               0xCB
-#define ILI9341_POWERB               0xCF
-#define ILI9341_PGAMMA               0xE0
-#define ILI9341_NGAMMA               0xE1
-#define ILI9341_DTCA                 0xE8
-#define ILI9341_DTCB                 0xEA
-#define ILI9341_POWER_SEQ            0xED
-#define ILI9341_3GAMMA_EN            0xF2
-#define ILI9341_INTERFACE            0xF6
-#define ILI9341_PRC                  0xF7
+#define TIME_SCAN 25
+#define TIME_DBL  500
+#define TIME_LONG 500
 
 /***************************************************************************************************
- *                                      PUBLIC TYPES
+ *                                      PRIVATE TYPES
  **************************************************************************************************/
 
-typedef struct
-{
-    uint16_t x1, y1, x2, y2;
-} rect_t;
-
-typedef uint32_t lcd_bmp_size_t;
-typedef uint16_t lcd_color_t;
 
 /***************************************************************************************************
  *                               PRIVATE FUNCTION PROTOTYPES
@@ -103,21 +56,32 @@ typedef uint16_t lcd_color_t;
  *                                       PRIVATE DATA
  **************************************************************************************************/
 
+const struct
+{
+    GPIO_TypeDef * port;
+    uint32_t        pin;
+} pins[] =
+{
+    {KEY_UP_PIN    },
+    {KEY_DOWN_PIN  },   
+    {KEY_LEFT_PIN  },   
+    {KEY_RIGHT_PIN },   
+    {KEY_CENTER_PIN},   
+};
+
+struct
+{
+    uint64_t timer; // Таймер для отсчета времени между любыми событиями
+    uint64_t push_timer; // Таймер для отсчета времени между событиями KEY_PUSH
+    key_event_t prev_status;
+    bool dbl_flag;
+    bool long_flag;
+    void(* events[KEY_EVENT_CNT])(const key_event_t, const key_t);
+} keys[KEY_CNT];
+
 /***************************************************************************************************
  *                                       PUBLIC DATA
  **************************************************************************************************/
-
-/***************************************************************************************************
- *                              PUBLIC FUNCTION PROTOTYPES
- **************************************************************************************************/
-
-lcd_bmp_size_t lcd_get_data_size(const rect_t * _rect);
-void lcd_send_data(const uint8_t * _data, const lcd_bmp_size_t _size);
-void lcd_send_cmd(const uint8_t * _data);
-void lcd_set_rect(const rect_t * _rect);
-void lcd_fill_rect(const rect_t * _rect, const lcd_color_t _color);
-void lcd_draw_bmp(const rect_t * _rect, const lcd_color_t * _bmp);
-void lcd_init(void);
 
 /***************************************************************************************************
  *                                      EXTERNAL DATA
@@ -131,9 +95,89 @@ void lcd_init(void);
  *                                    PRIVATE FUNCTIONS
  **************************************************************************************************/
 
+static void _keyscan(void)
+{
+    static uint64_t timer = 0;
+    
+    timer += TIME_SCAN;
+    
+    for (uint8_t i = 0; i < KEY_CNT; i++)
+    {
+        key_event_t curr = GPIO_ReadInputDataBit(pins[i].port, pins[i].pin) ? KEY_POP : KEY_PUSH;
+        
+        if (keys[i].prev_status != curr)
+        {
+            if (keys[i].events[curr] != NULL)
+            {
+                keys[i].events[curr](curr, i); // KEY_POP, KEY_PUSH
+            }
+            
+            if (curr == KEY_PUSH)
+            {
+                keys[i].dbl_flag = ((timer - keys[i].push_timer) < TIME_DBL);
+                
+                keys[i].push_timer = timer;
+            }
+            else /* if (curr == KEY_POP) */
+            {
+                if ((timer - keys[i].timer) < TIME_LONG)
+                {
+                    key_event_t event = keys[i].dbl_flag ? KEY_DOUBLE_CLICK : KEY_CLICK;
+                    keys[i].dbl_flag = false;
+                    
+                    if (keys[i].events[event] != NULL)
+                    {
+                        keys[i].events[event](event, i); // KEY_DOUBLE_CLICK, KEY_CLICK
+                    }
+                }
+            }
+            
+            keys[i].timer = timer;
+            keys[i].prev_status = curr;
+            keys[i].long_flag = false;
+        }
+        else
+        {
+            if (   curr == KEY_PUSH
+                && (timer - keys[i].timer) >= TIME_LONG
+                && keys[i].long_flag == false
+                )
+            {
+                key_event_t event = keys[i].dbl_flag ? KEY_DBL_LONG_PRESS : KEY_LONG_PRESS;
+                keys[i].dbl_flag = false;
+                
+                if (keys[i].events[event] != NULL)
+                {
+                    keys[i].events[event](event, i); // KEY_DBL_LONG_PRESS, KEY_LONG_PRESS
+                }
+
+                keys[i].long_flag = true;
+            }
+        }
+    }
+};
+
+void SysTick_Handler(void)
+{
+    _keyscan();
+};
+
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
+
+void bsp_keyboard_init(void)
+{
+    RCC_ClocksTypeDef RCC_Clocks;
+
+    RCC_GetClocksFreq(&RCC_Clocks);
+    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000 * TIME_SCAN);
+
+    for (uint8_t i = 0; i < KEY_CNT; i++)
+    {
+        GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_PULL_UP, GPIO_MODE_INPUT);
+    }
+};
 
 /***************************************************************************************************
  *                                       END OF FILE
