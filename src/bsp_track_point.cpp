@@ -178,15 +178,15 @@ namespace track_point
 
 void init(void)
 {
-    RCC_ClocksTypeDef RCC_Clocks;
-
-    RCC_GetClocksFreq(&RCC_Clocks);
-    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000 * TIME_SCAN);
-
     for (uint8_t i = 0; i < KEY_CNT; i++)
     {
         GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_PULL_UP, GPIO_MODE_INPUT);
     }
+
+    RCC_ClocksTypeDef RCC_Clocks;
+
+    RCC_GetClocksFreq(&RCC_Clocks);
+    SysTick_Config(RCC_Clocks.HCLK_Frequency / (1000 * TIME_SCAN));
 };
 
 void callback_init(key_t _key_num, key_event_t _event, fn_event_t _func)

@@ -170,11 +170,10 @@ const uint8_t ILI9341_PRC           = 0xF7;
  *                                    PRIVATE FUNCTIONS
  **************************************************************************************************/
 
-static void _delay(uint8_t _tm)
+static void _delay(volatile uint8_t _tm)
 {
     for (; _tm > 0; _tm--)
-        for (volatile uint32_t ct = 0xFFF; ct > 0; ct--)
-            __asm("nop");
+        for (volatile uint32_t ct = 0xFFF; ct > 0; ct--);
 }
 
 void _hw_init(void)
@@ -329,7 +328,7 @@ void init(void)
     _delay(100);
     
     send_cmd((const uint8_t []){1, ILI9341_RESET});
-    _delay(1);
+    _delay(100);
     
     send_cmd((const uint8_t []){6 , ILI9341_POWERA      , 0x39, 0x2C, 0x00, 0x34, 0x02});
     send_cmd((const uint8_t []){4 , ILI9341_POWERB      , 0x00, 0xC1, 0x30});
