@@ -68,7 +68,7 @@ static void spi_set_speed(enum sd_speed speed);
 #define GPIO_Pin_SPI_SD_MOSI     GPIO_Pin_15
 #define RCC_APBPeriphClockCmd_SPI_SD  RCC_APB1PeriphClockCmd
 #define RCC_APBPeriph_SPI_SD     RCC_APB1Periph_SPI2
-#define SPI_BaudRatePrescaler_SPI_SD  SPI_BaudRatePrescaler_256
+#define SPI_BaudRatePrescaler_SPI_SD  SPI_BaudRatePrescaler_2
 
 
 static void spi_init(void)
