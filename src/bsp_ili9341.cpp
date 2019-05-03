@@ -40,6 +40,7 @@ CS          A3          PB0
  **************************************************************************************************/
 
 #include "bsp_ili9341.h"
+#include "bsp_gpio.h"
 
 #include "RTE_Components.h"
 #include CMSIS_device_header
@@ -57,18 +58,18 @@ extern "C"
 
 //-- board depend defines
 
-#define LCD_PIN_D0 GPIOA, 0x09
-#define LCD_PIN_D1 GPIOC, 0x07
-#define LCD_PIN_D2 GPIOB, 0x06
-#define LCD_PIN_D3 GPIOA, 0x07
-#define LCD_PIN_D4 GPIOB, 0x05
-#define LCD_PIN_D5 GPIOA, 0x05
-#define LCD_PIN_D6 GPIOB, 0x0A
-#define LCD_PIN_D7 GPIOA, 0x08
-#define LCD_PIN_RS GPIOA, 0x04
-#define LCD_PIN_RD GPIOA, 0x00
-#define LCD_PIN_WR GPIOA, 0x01
-#define LCD_PIN_CS GPIOB, 0x00
+#define LCD_PIN_D0 PORTA_09
+#define LCD_PIN_D1 PORTC_07
+#define LCD_PIN_D2 PORTB_06
+#define LCD_PIN_D3 PORTA_07
+#define LCD_PIN_D4 PORTB_05
+#define LCD_PIN_D5 PORTA_05
+#define LCD_PIN_D6 PORTB_10
+#define LCD_PIN_D7 PORTA_08
+#define LCD_PIN_RS PORTA_04
+#define LCD_PIN_RD PORTA_00
+#define LCD_PIN_WR PORTA_01
+#define LCD_PIN_CS PORTB_00
 
 #define LCD_CMD_WR           (1 <<  9)
 #define LCD_DATA_WR (1 << 8 | 1 <<  9)
