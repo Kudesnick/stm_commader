@@ -24,6 +24,7 @@
 #include "bsp_ili9341.h"
 #include "cpp_font.h"
 #include "courier_new.h"
+#include "ff.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
@@ -66,8 +67,58 @@ int main(void)
     track_point::init();
     ili9341::init();
 
-    ili9341::fill_rect(NULL, 0xFF);
-    font::courier_new.draw({16, 8, 27, 300}, "AAAAAAA Hello word!!! Привет!!!");
+//    ili9341::fill_rect(NULL, 0xFF);
+    font::courier_new.draw({16, 8, 27, 300}, "Hello word!");
+    
+    // Тест флешки // see http://we.easyelectronics.ru/aliaksei/stm32f103-i-fatfs-nachinayuschim.html
+    static char buff[1024];             // буфер для чтения/записи
+
+    FRESULT result;
+
+    // смонтировать диск
+    FATFS FATFS_Obj;
+
+    result = f_mount(&FATFS_Obj, "0", 1);
+    if (result != FR_OK)
+    {
+            //printf("Ошибка монтирования диска %d\r\n", result);
+    }
+
+
+    // считаем файлы в корневом каталоге
+    DIR dir;
+    FILINFO fileInfo;
+    int nFiles = 0;
+
+    result = f_opendir(&dir, "/");
+    if (result == FR_OK)
+    {
+            while (((result = f_readdir(&dir, &fileInfo)) == FR_OK) && fileInfo.fname[0])
+            {
+                    nFiles++;
+            }
+    }
+    f_closedir(&dir);
+
+
+    // открываем файл readme.txt для чтения
+    FIL file;
+    UINT nRead, nWritten;
+
+    result = f_open(&file, "readme.txt", FA_OPEN_EXISTING | FA_READ);
+    if (result == FR_OK)
+    {
+            f_read(&file, &buff, 1024, &nRead);
+            f_close(&file);
+    }
+
+    // создаем файл write.txt
+    result = f_open(&file, "write.txt", FA_CREATE_ALWAYS | FA_WRITE);
+    if (result == FR_OK)
+    {
+            f_write(&file, &buff, nRead, &nWritten);
+            f_close(&file);
+    }
     
     for(;;);
 
