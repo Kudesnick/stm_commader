@@ -40,7 +40,8 @@ int main(void)
     ili9341::init();
 
     ili9341::fill_rect(NULL, 0xFF);
-    
+    font::courier_new.draw({16, 8, 27, 300}, "starting");
+        
     // Тест флешки // see http://we.easyelectronics.ru/aliaksei/stm32f103-i-fatfs-nachinayuschim.html
     static char buff[1024];             // буфер для чтения/записи
 
@@ -91,6 +92,10 @@ int main(void)
                 f_close(&file);
 
                 font::courier_new.draw({16, 8, 27, 300}, "Hello word!");
+        }
+        else
+        {
+            font::courier_new.draw({16, 8, 27, 300}, "SD card error.");
         }
     }
     
