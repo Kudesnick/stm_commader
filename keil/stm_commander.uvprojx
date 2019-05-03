@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>5</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -383,29 +383,29 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\main.c</FilePath>
+              <FileName>bsp_ili9341.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\bsp_ili9341.cpp</FilePath>
             </File>
             <File>
-              <FileName>bsp_ili9341.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\bsp_ili9341.c</FilePath>
+              <FileName>bsp_track_point.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\bsp_track_point.cpp</FilePath>
             </File>
             <File>
-              <FileName>courier_new.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\courier_new.c</FilePath>
+              <FileName>cpp_font.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\cpp_font.cpp</FilePath>
             </File>
             <File>
-              <FileName>font.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\font.c</FilePath>
+              <FileName>courier_new.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\courier_new.cpp</FilePath>
             </File>
             <File>
-              <FileName>bsp_keyboard.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\bsp_keyboard.c</FilePath>
+              <FileName>main.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\main.cpp</FilePath>
             </File>
           </Files>
         </Group>

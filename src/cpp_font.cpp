@@ -8,11 +8,11 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          main.c
+ *   File:          font.c
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       13.04.2019 - file created
+ *   History:       21.04.2019 - file created
  *
  **************************************************************************************************/
 
@@ -20,17 +20,19 @@
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include "bsp_keyboard.h"
+#include "cpp_font.h"
+#include <string.h>
 #include "bsp_ili9341.h"
-#include "font.h"
-#include "courier_new.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
 
+#define DEF_CL_TEXT 0x0000
+#define DEF_CL_BG   0xFFFF
+
 /***************************************************************************************************
- *                                      PRIVATE TYPES
+ *                                      PUBLIC TYPES
  **************************************************************************************************/
 
 /***************************************************************************************************
@@ -43,6 +45,10 @@
 
 /***************************************************************************************************
  *                                       PUBLIC DATA
+ **************************************************************************************************/
+
+/***************************************************************************************************
+ *                              PUBLIC FUNCTION PROTOTYPES
  **************************************************************************************************/
 
 /***************************************************************************************************
@@ -61,19 +67,56 @@
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-int main(void)
+namespace font
 {
-    bsp_keyboard_init();
-    lcd_init();
 
-    for(;;)
+
+cpp_font::cpp_font(const font_t &_font):
+    font_(&_font),
+    brush_({DEF_CL_TEXT, DEF_CL_BG})
+{};
+
+void cpp_font::set_brush(brush_t &_brush)
+{
+    brush_ = _brush;
+};
+
+void cpp_font::draw(const ili9341::rect_t& _rect, const char * _str)
+{
+    uint8_t len = strlen(_str);
+    ili9341::bmp_size_t max_pixel_cnt = ili9341::get_data_size(&_rect);
+
+    ili9341::bmp_size_t curr_pixel = 0;
+
+    ili9341::set_rect(&_rect);
+
+    for(uint8_t i = 0; i < len; i++)
     {
-        lcd_fill_rect(&(const rect_t){0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1}, 0xFF);
-        font_set_attr(&font_courier_new, 0x0000, 0xFFFF);
-        font_draw_text(16, 8, "AAAAAAA Hello word!!! Привет!!!");
-        for(;;);
+        if ((_str[i] >= font_->attr.start_code) && (_str[i] <= font_->attr.end_code))
+        {
+            const uint8_t * pixel_ptr = &(font_->p_font[(uint16_t)(_str[i] - font_->attr.start_code) * font_->attr.glyph_size]);
+            
+            uint8_t symbol_height_inc = font_->attr.height_glyph / 8 +
+                (((font_->attr.height_glyph % 8) > 0) ? 1 : 0);
+            
+            
+            for (uint8_t j = font_->attr.width_glyph; j > 0; j--, pixel_ptr += symbol_height_inc)
+            {
+                uint32_t curr_byte = *(uint32_t *)pixel_ptr;
+                
+                for (uint8_t k = font_->attr.height_glyph; k > 0; k--, curr_byte >>= 1)
+                {
+                    ili9341::send_data((const uint8_t *)((curr_byte & 1) ? &brush_.text : &brush_.background),
+                                   sizeof(ili9341::color_t));
+
+                    if (++curr_pixel >= max_pixel_cnt) return;
+                }
+            }
+        }
     }
-}
+};
+
+}; // namespace font
 
 /***************************************************************************************************
  *                                       END OF FILE
