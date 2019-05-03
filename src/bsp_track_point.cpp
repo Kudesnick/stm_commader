@@ -8,7 +8,7 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          bsp_keyboard.c
+ *   File:          bsp_track_point.cpp
  *   Description:   
  *
  ***************************************************************************************************
@@ -23,11 +23,17 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "bsp_keyboard.h"
+#include "bsp_track_point.h"
 
 #include "RTE_Components.h"
 #include CMSIS_device_header
+
+extern "C"
+{
 #include "GPIO_STM32F10x.h"
+};
+
+using namespace track_point;
 
 /***************************************************************************************************
  *                                       DEFINITIONS
@@ -76,7 +82,7 @@ struct
     key_event_t prev_status;
     bool dbl_flag;
     bool long_flag;
-    void(* events[KEY_EVENT_CNT])(const key_event_t, const key_t);
+    fn_event_t events[KEY_EVENT_CNT];
 } keys[KEY_CNT];
 
 /***************************************************************************************************
@@ -109,7 +115,7 @@ static void _keyscan(void)
         {
             if (keys[i].events[curr] != NULL)
             {
-                keys[i].events[curr](curr, i); // KEY_POP, KEY_PUSH
+                keys[i].events[curr](static_cast<key_t>(i), curr); // KEY_POP, KEY_PUSH
             }
             
             if (curr == KEY_PUSH)
@@ -127,7 +133,7 @@ static void _keyscan(void)
                     
                     if (keys[i].events[event] != NULL)
                     {
-                        keys[i].events[event](event, i); // KEY_DOUBLE_CLICK, KEY_CLICK
+                        keys[i].events[event](static_cast<key_t>(i), event); // KEY_DOUBLE_CLICK, KEY_CLICK
                     }
                 }
             }
@@ -148,7 +154,7 @@ static void _keyscan(void)
                 
                 if (keys[i].events[event] != NULL)
                 {
-                    keys[i].events[event](event, i); // KEY_DBL_LONG_PRESS, KEY_LONG_PRESS
+                    keys[i].events[event](static_cast<key_t>(i), event); // KEY_DBL_LONG_PRESS, KEY_LONG_PRESS
                 }
 
                 keys[i].long_flag = true;
@@ -157,7 +163,7 @@ static void _keyscan(void)
     }
 };
 
-void SysTick_Handler(void)
+extern "C" void SysTick_Handler(void)
 {
     _keyscan();
 };
@@ -166,7 +172,10 @@ void SysTick_Handler(void)
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-void bsp_keyboard_init(void)
+namespace track_point
+{
+
+void init(void)
 {
     RCC_ClocksTypeDef RCC_Clocks;
 
@@ -179,13 +188,15 @@ void bsp_keyboard_init(void)
     }
 };
 
-void bsp_callback_init(key_t _key_num, key_event_t _event, void(* _func)(const key_event_t, const key_t))
+void callback_init(key_t _key_num, key_event_t _event, fn_event_t _func)
 {
     if (_key_num < KEY_CNT && _event < KEY_EVENT_CNT)
     {
         keys[_key_num].events[_event] = _func;
     }
-}
+};
+
+}; // namespace track_point
 
 /***************************************************************************************************
  *                                       END OF FILE
