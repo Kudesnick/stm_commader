@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>..\fatfs\source</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
