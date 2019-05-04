@@ -186,7 +186,7 @@ void init(void)
     RCC_ClocksTypeDef RCC_Clocks;
 
     RCC_GetClocksFreq(&RCC_Clocks);
-    SysTick_Config(RCC_Clocks.HCLK_Frequency / (1000 * TIME_SCAN));
+    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000 * TIME_SCAN);
 };
 
 void callback_init(key_t _key_num, key_event_t _event, fn_event_t _func)
