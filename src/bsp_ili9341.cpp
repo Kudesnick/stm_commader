@@ -170,7 +170,7 @@ const uint8_t ILI9341_PRC           = 0xF7;
  *                                    PRIVATE FUNCTIONS
  **************************************************************************************************/
 
-static void _delay(volatile uint8_t _tm)
+static void _delay(volatile uint16_t _tm)
 {
     for (; _tm > 0; _tm--)
         for (volatile uint32_t ct = 0xFFF; ct > 0; ct--);
@@ -181,6 +181,7 @@ void _hw_init(void)
     for (uint8_t i = 0; i < countof(pins); i++)
         GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_OUT_PUSH_PULL, GPIO_MODE_OUT2MHZ);
     
+    GPIO_PinWrite(LCD_PIN_CS, 1);
     GPIO_PinWrite(LCD_PIN_RD, 1);
     GPIO_PinWrite(LCD_PIN_WR, 1);
     GPIO_PinWrite(LCD_PIN_RS, 0);
@@ -287,7 +288,7 @@ void set_rect(const rect_t * _rect)
     send_cmd((const uint8_t []){1, ILI9341_GRAM});
 }
 
-void fill_rect(const rect_t * _rect, const color_t _color)
+void fill_rect(const rect_t * const _rect, const color_t _color)
 {
     rect_t rect;
     
@@ -325,10 +326,10 @@ void draw_bmp(const rect_t * _rect, const color_t * _bmp)
 void init(void)
 {
     _hw_init();
-    _delay(100);
+    _delay(1000);
     
     send_cmd((const uint8_t []){1, ILI9341_RESET});
-    _delay(100);
+//    _delay(100);
     
     send_cmd((const uint8_t []){6 , ILI9341_POWERA      , 0x39, 0x2C, 0x00, 0x34, 0x02});
     send_cmd((const uint8_t []){4 , ILI9341_POWERB      , 0x00, 0xC1, 0x30});
@@ -358,10 +359,10 @@ void init(void)
     send_cmd((const uint8_t []){16, ILI9341_PGAMMA      , 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1, 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00});
     send_cmd((const uint8_t []){16, ILI9341_NGAMMA      , 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F});
     send_cmd((const uint8_t []){1 , ILI9341_SLEEP_OUT   });
-    _delay(1);
+//    _delay(1);
 
     send_cmd((const uint8_t []){1 , ILI9341_DISPLAY_ON});
-    _delay(1);
+//    _delay(1);
 }
 
 }; // namespace ili9341
