@@ -118,7 +118,7 @@ bmp_size_t get_data_size(const rect_t * _rect);
 void send_data(const uint8_t * _data, const bmp_size_t _size);
 void send_cmd(const uint8_t * _data);
 void set_rect(const rect_t * _rect);
-void fill_rect(const rect_t * _rect, const color_t _color);
+void fill_rect(const rect_t * const _rect, const color_t _color);
 void draw_bmp(const rect_t * _rect, const color_t * _bmp);
 void init(void);
 

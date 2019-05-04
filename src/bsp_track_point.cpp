@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include "bsp_track_point.h"
+#include "bsp_gpio.h"
 
 #include "RTE_Components.h"
 #include CMSIS_device_header
@@ -39,11 +40,11 @@ using namespace track_point;
  *                                       DEFINITIONS
  **************************************************************************************************/
 
-#define KEY_UP_PIN     GPIOA, 0x06
-#define KEY_DOWN_PIN   GPIOB, 0x01
-#define KEY_LEFT_PIN   GPIOA, 0x07
-#define KEY_RIGHT_PIN  GPIOB, 0x02
-#define KEY_CENTER_PIN GPIOA, 0x05
+#define KEY_UP_PIN      PORTA_11
+#define KEY_DOWN_PIN    PORTB_01
+#define KEY_LEFT_PIN    PORTB_11
+#define KEY_RIGHT_PIN   PORTB_02
+#define KEY_CENTER_PIN  PORTA_12
 
 #define TIME_SCAN 25
 #define TIME_DBL  500
@@ -109,7 +110,7 @@ static void _keyscan(void)
     
     for (uint8_t i = 0; i < KEY_CNT; i++)
     {
-        key_event_t curr = GPIO_ReadInputDataBit(pins[i].port, pins[i].pin) ? KEY_POP : KEY_PUSH;
+        key_event_t curr = GPIO_PinRead(pins[i].port, pins[i].pin) ? KEY_POP : KEY_PUSH;
         
         if (keys[i].prev_status != curr)
         {
@@ -177,15 +178,15 @@ namespace track_point
 
 void init(void)
 {
-    RCC_ClocksTypeDef RCC_Clocks;
-
-    RCC_GetClocksFreq(&RCC_Clocks);
-    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000 * TIME_SCAN);
-
     for (uint8_t i = 0; i < KEY_CNT; i++)
     {
         GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_PULL_UP, GPIO_MODE_INPUT);
     }
+
+    RCC_ClocksTypeDef RCC_Clocks;
+
+    RCC_GetClocksFreq(&RCC_Clocks);
+    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000 * TIME_SCAN);
 };
 
 void callback_init(key_t _key_num, key_event_t _event, fn_event_t _func)
