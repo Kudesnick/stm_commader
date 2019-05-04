@@ -107,12 +107,12 @@
 /* #define SYSCLK_FREQ_HSE    HSE_VALUE */
  #define SYSCLK_FREQ_24MHz  24000000
 #else
-#define SYSCLK_FREQ_HSE    HSE_VALUE
-/* #define SYSCLK_FREQ_24MHz  24000000 */ 
-/* #define SYSCLK_FREQ_36MHz  36000000 */
-/* #define SYSCLK_FREQ_48MHz  48000000 */
-/* #define SYSCLK_FREQ_56MHz  56000000 */
-/* #define SYSCLK_FREQ_72MHz  72000000 */
+/* #define SYSCLK_FREQ_HSE    HSE_VALUE */
+/* #define SYSCLK_FREQ_24MHz  24000000  */ 
+/* #define SYSCLK_FREQ_36MHz  36000000  */
+/* #define SYSCLK_FREQ_48MHz  48000000  */
+/* #define SYSCLK_FREQ_56MHz  56000000  */
+#define SYSCLK_FREQ_72MHz  72000000
 #endif
 
 /*!< Uncomment the following line if you need to use external SRAM mounted
@@ -997,7 +997,7 @@ static void SetSysClockTo72(void)
   {
     HSEStatus = RCC->CR & RCC_CR_HSERDY;
     StartUpCounter++;  
-  } while((HSEStatus == 0) && (StartUpCounter != HSE_STARTUP_TIMEOUT));
+  } while((HSEStatus == 0)/* && (StartUpCounter != HSE_STARTUP_TIMEOUT)*/);
 
   if ((RCC->CR & RCC_CR_HSERDY) != RESET)
   {

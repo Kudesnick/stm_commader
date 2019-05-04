@@ -25,10 +25,18 @@
 #include "cpp_font.h"
 #include "courier_new.h"
 #include "ff.h"
+#include "bsp_gpio.h"
+
+extern "C"
+{
+#include "GPIO_STM32F10x.h"
+}
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
+
+#define LED2 GPIOA, 0x5
 
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
@@ -36,6 +44,16 @@
 
 int main(void)
 {
+#if (0)
+    // Проверка того, что проект запустился (мигаем светодиодом на борде)
+    GPIO_PinConfigure(LED2, GPIO_OUT_PUSH_PULL, GPIO_MODE_OUT2MHZ);
+    for (uint8_t i = 1; i <= 6; i++)
+    {
+        GPIO_PinWrite(LED2, i & 1);
+        for (volatile uint32_t i = 0; i < 0xFFFFF; i++){};
+    }
+#endif
+
     track_point::init();
     ili9341::init();
 
