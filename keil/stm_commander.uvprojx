@@ -398,14 +398,39 @@
               <FilePath>..\src\cpp_font.cpp</FilePath>
             </File>
             <File>
+              <FileName>main.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\main.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>fnts</GroupName>
+          <Files>
+            <File>
               <FileName>courier_new.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\courier_new.cpp</FilePath>
             </File>
             <File>
-              <FileName>main.cpp</FileName>
+              <FileName>fnt8x8.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\src\main.cpp</FilePath>
+              <FilePath>..\src\fnt8x8.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>fnt8x16.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\fnt8x16.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>atari.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\atari.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>zx.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\zx.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -829,14 +854,39 @@
               <FilePath>..\src\cpp_font.cpp</FilePath>
             </File>
             <File>
+              <FileName>main.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\main.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>fnts</GroupName>
+          <Files>
+            <File>
               <FileName>courier_new.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\courier_new.cpp</FilePath>
             </File>
             <File>
-              <FileName>main.cpp</FileName>
+              <FileName>fnt8x8.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\src\main.cpp</FilePath>
+              <FilePath>..\src\fnt8x8.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>fnt8x16.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\fnt8x16.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>atari.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\atari.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>zx.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\zx.cpp</FilePath>
             </File>
           </Files>
         </Group>
