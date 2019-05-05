@@ -22,7 +22,8 @@
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include "bsp_ili9341.h"
+#include <stdint.h>
+#include <string.h>
 
 /***************************************************************************************************
  *                                       DEFINITIONS
@@ -34,6 +35,26 @@
 
 namespace font
 {
+
+typedef enum : uint8_t
+{
+    BLACK_D   = 0,
+    BLUE_D    = 1,
+    RED_D     = 2,
+    MAGENTA_D = 3,
+    GREEN_D   = 4,
+    CYAN_D    = 5,
+    YELLOW_D  = 6,
+    WHITE_D   = 7,
+    BLACK   = 8 + 0,
+    BLUE    = 8 + 1,
+    RED     = 8 + 2,
+    MAGENTA = 8 + 3,
+    GREEN   = 8 + 4,
+    CYAN    = 8 + 5,
+    YELLOW  = 8 + 6,
+    WHITE   = 8 + 7,
+} color_t;
 
 typedef struct
 {
@@ -52,8 +73,8 @@ typedef struct
 
 typedef struct
 {
-    ili9341::color_t background;
-    ili9341::color_t text;
+    color_t txt;
+    color_t bg;
 } brush_t;
 
 class cpp_font
@@ -63,8 +84,8 @@ private:
     brush_t brush_;
 public:
     cpp_font(const font_t&);
-    void set_brush(brush_t&);
-    void draw(const ili9341::rect_t&, const char *);
+    void set_brush(const brush_t&);
+    void draw(const uint16_t, const uint16_t, const char);
 };
 
 }; // namespace font
