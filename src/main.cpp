@@ -22,10 +22,15 @@
 
 #include "bsp_track_point.h"
 #include "bsp_ili9341.h"
-#include "cpp_font.h"
-#include "courier_new.h"
 #include "ff.h"
 #include "bsp_gpio.h"
+
+#include "cpp_font.h"
+#include "courier_new.h"
+#include "fnt8x8.h"
+#include "fnt8x16.h"
+#include "atari.h"
+#include "zx.h"
 
 extern "C"
 {
@@ -57,9 +62,14 @@ int main(void)
     track_point::init();
     ili9341::init();
 
+    const char str[] = "Hello word! Привет мир!";
     ili9341::fill_rect(NULL, 0xFF);
-    font::courier_new.draw({16, 8, 27, 300}, "starting");
-        
+    font::courier_new.draw({16, 8, 27, 300}, "Hello word! Courier new");
+    font::fnt8x8.draw     ({32, 8, 39, 300}, "Hello word! 8x8");
+    font::fnt8x16.draw    ({48, 8, 63, 300}, "Hello word! 8x16");
+    font::atari.draw      ({64, 8, 71, 300}, "Hello word! atari 400/400");
+    font::zx.draw         ({80, 8, 87, 300}, "Hello word! spectrum ZX");
+
     // Тест флешки // see http://we.easyelectronics.ru/aliaksei/stm32f103-i-fatfs-nachinayuschim.html
     static char buff[1024];             // буфер для чтения/записи
 
