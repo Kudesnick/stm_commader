@@ -329,7 +329,7 @@ void init(void)
     _delay(1000);
     
     send_cmd((const uint8_t []){1, ILI9341_RESET});
-//    _delay(100);
+    _delay(100);
     
     send_cmd((const uint8_t []){6 , ILI9341_POWERA      , 0x39, 0x2C, 0x00, 0x34, 0x02});
     send_cmd((const uint8_t []){4 , ILI9341_POWERB      , 0x00, 0xC1, 0x30});
@@ -359,10 +359,10 @@ void init(void)
     send_cmd((const uint8_t []){16, ILI9341_PGAMMA      , 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1, 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00});
     send_cmd((const uint8_t []){16, ILI9341_NGAMMA      , 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F});
     send_cmd((const uint8_t []){1 , ILI9341_SLEEP_OUT   });
-//    _delay(1);
+    _delay(100);
 
     send_cmd((const uint8_t []){1 , ILI9341_DISPLAY_ON});
-//    _delay(1);
+    _delay(100);
 }
 
 }; // namespace ili9341

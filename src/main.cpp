@@ -24,13 +24,7 @@
 #include "bsp_ili9341.h"
 #include "ff.h"
 #include "bsp_gpio.h"
-
-#include "cpp_font.h"
-#include "courier_new.h"
-#include "fnt8x8.h"
-#include "fnt8x16.h"
-#include "atari.h"
-#include "zx.h"
+#include "cpp_terminal.h"
 
 extern "C"
 {
@@ -62,13 +56,11 @@ int main(void)
     track_point::init();
     ili9341::init();
 
-    ili9341::fill_rect(NULL, 0xFF);
-    font::courier_new.draw(16, 8, '8');
-    font::fnt8x8.draw     (32, 8, '8');
-    font::fnt8x16.draw    (48, 8, '8');
-    font::atari.draw      (64, 8, '8');
-    font::zx.draw         (80, 8, '8');
+    static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
+    term.print("Часто путают терминал и шелл. В тех же *nix есть шеллы (bash, csh, zsh, …) и терминалы (konsole/guake/yaquake/tilda и т.д. и т.п.) Для мира Windows общеизвестный терминал только один – стандартное консольное окошко, которое часто ошибочно называют «cmd.exe». И мало кто знает о существовании множества других эмуляторов терминала. Известных шеллов больше, их целых два: cmd.exe и powershell.exe. И хотя есть как минимум три порта bash (MinGW, CygWin, GIT) многие юниксоиды предпочитают ругать cmd.exe.");
 
+for(;;){};
+    
     // Тест флешки // see http://we.easyelectronics.ru/aliaksei/stm32f103-i-fatfs-nachinayuschim.html
     static char buff[1024];             // буфер для чтения/записи
 
@@ -118,11 +110,11 @@ int main(void)
                 f_write(&file, &buff, nRead, &nWritten);
                 f_close(&file);
 
-                font::courier_new.draw(16, 8, '+');
+//                font::courier_new.draw(16, 8, '+');
         }
         else
         {
-            font::courier_new.draw(16, 8, '-');
+//            font::courier_new.draw(16, 8, '-');
         }
     }
     

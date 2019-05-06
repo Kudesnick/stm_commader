@@ -8,29 +8,21 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          terminal.h
+ *   File:          font.c
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       06.05.2019 - file created
+ *   History:       21.04.2019 - file created
  *
  **************************************************************************************************/
-
-#pragma once
 
 /***************************************************************************************************
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include <stdint.h>
-#include <string.h>
+#include "cpp_terminal.h"
+#include "bsp_ili9341.h"
 
-#include "cpp_font.h"
-#include "courier_new.h"
-#include "fnt8x8.h"
-#include "fnt8x16.h"
-#include "atari.h"
-#include "zx.h"
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
@@ -38,42 +30,6 @@
 /***************************************************************************************************
  *                                      PUBLIC TYPES
  **************************************************************************************************/
-
-namespace terminal
-{
-
-typedef struct
-{
-    uint16_t x, y;
-} crd_t;
-
-class cpp_terminal : protected font::cpp_font
-{
-private:
-    const crd_t win_crd_;
-    const crd_t win_size_;
-    char * const p_buf_;
-    const uint16_t buf_size_;
-    uint16_t buf_ptr_;
-    uint16_t scroll_ptr_;
-    crd_t cursor_;
-
-public:
-    cpp_terminal(const uint16_t _x,
-                 const uint16_t _y,
-                 const uint8_t _height,
-                 const uint8_t _width,
-                 const font::font_t& _font,
-                 char * const _buffer = NULL,
-                 uint16_t _buf_size = 0
-                 );
-    void clear(void);
-    void print(const char * const _str);
-    void set_brush(const font::brush_t &_brush);
-    void set_cursor(const int16_t _x, const int16_t _y);
-};
-
-}; // namespace terminal
 
 /***************************************************************************************************
  *                               PRIVATE FUNCTION PROTOTYPES
@@ -106,6 +62,86 @@ public:
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
+
+namespace terminal
+{
+
+cpp_terminal::cpp_terminal(
+    const uint16_t _x,
+    const uint16_t _y,
+    const uint8_t _height,
+    const uint8_t _width,
+    const font::font_t& _font,
+    char * const _buffer,
+    uint16_t _buf_size):
+    
+    win_crd_({_x, _y}),
+    win_size_({_height, _width}),
+    cpp_font(_font),
+    p_buf_(_buffer),
+    buf_size_(_buf_size)
+{
+    clear();
+};
+    
+void cpp_terminal::clear(void)
+{
+    buf_ptr_ = scroll_ptr_ = 0;
+    cursor_ = {0, 0};
+    
+    ili9341::rect_t rect =
+    {
+        .x1 = win_crd_.x,
+        .y1 = win_crd_.y,
+        .x2 = win_crd_.x,
+        .y2 = win_crd_.y,
+    };
+    
+    rect.x2 += win_size_.x * font_->attr.height_glyph - 1;
+    rect.y2 += win_size_.y * font_->attr.width_glyph - 1;
+    
+    ili9341::fill_rect(&rect, color_converter(brush_.bg));
+};
+
+void cpp_terminal::print(const char * const _str)
+{
+    if (_str == NULL) return;
+    
+    const char * str = _str;
+    uint16_t len = strlen(_str);
+    
+    while(len > 0)
+    {
+        uint8_t print_len = win_size_.y - cursor_.y;
+        if (len < print_len) print_len = len;
+        
+        draw(win_crd_.x + cursor_.x * font_->attr.height_glyph,
+             win_crd_.y + cursor_.y * font_->attr.width_glyph,
+             str, print_len);
+        
+        // Перевод курсора
+        cursor_.y += print_len;
+        
+        if (cursor_.y >= win_size_.y)
+        {
+            cursor_.y = 0;
+            cursor_.x++;
+            
+            if (cursor_.x >= win_size_.x)
+            {
+                // TO_DO реализовать прокручивание экрана
+            }
+        }
+        
+        // Переводим указатель
+        str += print_len;
+        len -= print_len;
+        
+        // TO_DO реализовать работу с буфером
+    };
+};
+
+}; // namespace terminal
 
 /***************************************************************************************************
  *                                       END OF FILE
