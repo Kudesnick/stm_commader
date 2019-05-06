@@ -8,6 +8,7 @@
 // FontSize  : 7 x 12
 
 #include "cpp_font.h"
+#include "courier_new.h"
 
 const uint8_t data[] =
 {
@@ -239,7 +240,10 @@ const uint8_t data[] =
     0x00, 0x02, 0xE0, 0x03, 0xA0, 0x00, 0xA0, 0x02, 0xE0, 0x03, 0x20, 0x02, 0x00, 0x00, 0x00, 0x00,
 };
 
-const font::font_t header =
+namespace font
+{
+
+    const font_t courier_new =
 {
     .attr =
     {
@@ -252,7 +256,4 @@ const font::font_t header =
     .p_font = data,
 };
 
-namespace font
-{
-    cpp_font courier_new(header);
 };

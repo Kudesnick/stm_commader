@@ -5,7 +5,5 @@
 
 namespace font
 {
-
-extern cpp_font zx;
-
+extern const font_t zx;
 };

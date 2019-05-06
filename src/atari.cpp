@@ -16,6 +16,7 @@
 //GLCD FontSize : 8 x 8
 
 #include "cpp_font.h"
+#include "atari.h"
 
 const uint8_t data[] =
 {
@@ -245,7 +246,10 @@ const uint8_t data[] =
     0xFF, 0xFF, 0xFF, 0x80, 0xC1, 0xE3, 0xF7, 0xFF 
 };
 
-const font::font_t header =
+namespace font
+{
+
+    const font_t atari =
 {
     .attr =
     {
@@ -258,7 +262,4 @@ const font::font_t header =
     .p_font = data,
 };
 
-namespace font
-{
-    cpp_font atari(header);
 };

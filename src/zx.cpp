@@ -16,6 +16,7 @@
 //GLCD FontSize : 8 x 8
 
 #include "cpp_font.h"
+#include "zx.h"
 
 const uint8_t data[] =
 {
@@ -247,7 +248,10 @@ const uint8_t data[] =
     0x00, 0x48, 0x34, 0x14, 0x14, 0x7C, 0x00, 0x00,
 };
 
-const font::font_t header =
+namespace font
+{
+
+const font_t zx =
 {
     .attr =
     {
@@ -260,7 +264,4 @@ const font::font_t header =
     .p_font = data,
 };
 
-namespace font
-{
-    cpp_font zx(header);
 };
