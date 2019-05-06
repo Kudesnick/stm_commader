@@ -62,7 +62,14 @@
  *                                    PRIVATE FUNCTIONS
  **************************************************************************************************/
 
-ili9341::color_t _color_converter(const font::color_t &_color)
+/***************************************************************************************************
+ *                                    PUBLIC FUNCTIONS
+ **************************************************************************************************/
+
+namespace font
+{
+  
+ili9341::color_t color_converter(const font::color_t &_color)
 {
     const uint16_t color[] =
     {
@@ -88,14 +95,6 @@ ili9341::color_t _color_converter(const font::color_t &_color)
     return color[_color];
 };
 
-/***************************************************************************************************
- *                                    PUBLIC FUNCTIONS
- **************************************************************************************************/
-
-namespace font
-{
-
-
 cpp_font::cpp_font(const font_t &_font):
     font_(&_font),
     brush_({DEF_CL_TEXT, DEF_CL_BG})
@@ -106,35 +105,42 @@ void cpp_font::set_brush(const brush_t &_brush)
     brush_ = _brush;
 };
 
-void cpp_font::draw(const uint16_t _x, const uint16_t _y, const char _ch)
+void cpp_font::draw(const uint16_t _x, const uint16_t _y, const char * const _str, const uint8_t _len)
 {
-    if ((_ch >= font_->attr.start_code) && (_ch <= font_->attr.end_code))
-    {
-        ili9341::rect_t rect = {_x, _y};
-        rect.x2 = _x + font_->attr.height_glyph - 1;
-        rect.y2 = _y + font_->attr.width_glyph - 1;
-        
-        ili9341::bmp_size_t curr_pixel = 0;
-    
-        ili9341::set_rect(&rect);
+    uint8_t len = (strlen(_str) < _len) ? strlen(_str) : _len;
 
-        const uint8_t * pixel_ptr = 
-            &(font_->p_font[(uint16_t)(_ch - font_->attr.start_code) * font_->attr.glyph_size]);
-        
-        const uint8_t symbol_height_inc = font_->attr.height_glyph / 8 +
-            (((font_->attr.height_glyph % 8) > 0) ? 1 : 0);
-        
-        
-        for (uint8_t j = font_->attr.width_glyph; j > 0; j--, pixel_ptr += symbol_height_inc)
-        {
-            uint32_t curr_byte = *(uint32_t *)pixel_ptr;
+    ili9341::rect_t rect = {_x, _y};
+    rect.x2 = _x + font_->attr.height_glyph - 1;
+    rect.y2 = _y + font_->attr.width_glyph * len - 1;
+    ili9341::set_rect(&rect);    
+    
+    ili9341::bmp_size_t max_pixel_cnt = ili9341::get_data_size(&rect);
+    ili9341::bmp_size_t curr_pixel = 0;
+
+    for(uint8_t i = 0; i < len; i++)
+    {
+        if ((_str[i] >= font_->attr.start_code) && (_str[i] <= font_->attr.end_code))
+        {    
+            const uint8_t * pixel_ptr = 
+                &(font_->p_font[(uint16_t)(_str[i] - font_->attr.start_code) * font_->attr.glyph_size]);
             
-            for (uint8_t k = font_->attr.height_glyph; k > 0; k--, curr_byte >>= 1)
+            const uint8_t symbol_height_inc = font_->attr.height_glyph / 8 +
+                (((font_->attr.height_glyph % 8) > 0) ? 1 : 0);
+            
+            
+            for (uint8_t j = font_->attr.width_glyph; j > 0; j--, pixel_ptr += symbol_height_inc)
             {
-                ili9341::color_t tmp_color = 
-                    _color_converter(((curr_byte & 1) ? brush_.txt : brush_.bg));
+                uint32_t curr_byte = *(uint32_t *)pixel_ptr;
                 
-                ili9341::send_data((const uint8_t *)&tmp_color, sizeof(ili9341::color_t));
+                for (uint8_t k = font_->attr.height_glyph; k > 0; k--, curr_byte >>= 1)
+                {
+                    ili9341::color_t tmp_color = 
+                        color_converter(((curr_byte & 1) ? brush_.txt : brush_.bg));
+                    
+                    ili9341::send_data((const uint8_t *)&tmp_color, sizeof(ili9341::color_t));
+                    
+                    if (++curr_pixel >= max_pixel_cnt) return;
+                }
             }
         }
     }

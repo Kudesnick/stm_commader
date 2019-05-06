@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include "bsp_ili9341.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
@@ -79,14 +80,16 @@ typedef struct
 
 class cpp_font
 {
-private:
+protected:
     const font_t * const font_;
     brush_t brush_;
 public:
     cpp_font(const font_t&);
     void set_brush(const brush_t&);
-    void draw(const uint16_t, const uint16_t, const char);
+    void draw(const uint16_t, const uint16_t, const char * const, const uint8_t);
 };
+
+ili9341::color_t color_converter(const font::color_t &_color);
 
 }; // namespace font
 
