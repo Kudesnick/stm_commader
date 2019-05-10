@@ -75,6 +75,58 @@ extern "C"
 #define LCD_DATA_WR (1 << 8 | 1 <<  9)
 #define LCD_DATA_RD (1 << 8 | 1 << 10)
 
+#define LCD_WIDTH  240
+#define LCD_HEIGHT 320
+
+#define ILI9341_RESET         0x01
+#define ILI9341_SLEEP_OUT     0x11
+#define ILI9341_GAMMA         0x26
+#define ILI9341_DISPLAY_OFF   0x28
+#define ILI9341_DISPLAY_ON    0x29
+#define ILI9341_COLUMN_ADDR   0x2A
+#define ILI9341_PAGE_ADDR     0x2B
+#define ILI9341_GRAM          0x2C
+#define ILI9341_VSCRDEF       0x33
+#define ILI9341_MAC           0x36
+#define ILI9341_VSCRSADD      0x37
+#define ILI9341_PIXEL_FORMAT  0x3A
+#define ILI9341_WDB           0x51
+#define ILI9341_WCD           0x53
+#define ILI9341_RGB_INTERFACE 0xB0
+#define ILI9341_FRC           0xB1
+#define ILI9341_BPC           0xB5
+#define ILI9341_DFC           0xB6
+#define ILI9341_POWER1        0xC0
+#define ILI9341_POWER2        0xC1
+#define ILI9341_VCOM1         0xC5
+#define ILI9341_VCOM2         0xC7
+#define ILI9341_POWERA        0xCB
+#define ILI9341_POWERB        0xCF
+#define ILI9341_PGAMMA        0xE0
+#define ILI9341_NGAMMA        0xE1
+#define ILI9341_DTCA          0xE8
+#define ILI9341_DTCB          0xEA
+#define ILI9341_POWER_SEQ     0xED
+#define ILI9341_3GAMMA_EN     0xF2
+#define ILI9341_INTERFACE     0xF6
+#define ILI9341_PRC           0xF7
+
+#define MAC_MY  (1 << 7)
+#define MAC_MX  (1 << 6)
+#define MAC_MV  (1 << 5)
+#define MAC_ML  (1 << 4)
+#define MAC_MH  (1 << 2)
+#define MAC_BGR (1 << 3)
+
+#define ILI9341_ROTATE_0 (MAC_MX                  )
+#define ILI9341_ROTATE_1 (                  MAC_MV)
+#define ILI9341_ROTATE_2 (         MAC_MY         )
+#define ILI9341_ROTATE_3 (MAC_MX | MAC_MY | MAC_MV)
+#define ILI9341_ROTATE_4 (MAC_MX | MAC_MY         )
+#define ILI9341_ROTATE_5 (MAC_MX          | MAC_MV)
+#define ILI9341_ROTATE_6 (           0            )
+#define ILI9341_ROTATE_7 (         MAC_MY | MAC_MV)
+
 /***************************************************************************************************
  *                                      PUBLIC TYPES
  **************************************************************************************************/
@@ -109,50 +161,11 @@ const struct
 
 GPIO_MODE data_mode;
 
+uint8_t rot_mode;
+
 /***************************************************************************************************
  *                                       PUBLIC DATA
  **************************************************************************************************/
-
-namespace ili9341
-{
-
-//-- lcd depend defines
-
-const uint16_t LCD_WIDTH  = 240;
-const uint16_t LCD_HEIGHT = 320;
-
-const uint8_t ILI9341_RESET         = 0x01;
-const uint8_t ILI9341_SLEEP_OUT     = 0x11;
-const uint8_t ILI9341_GAMMA         = 0x26;
-const uint8_t ILI9341_DISPLAY_OFF   = 0x28;
-const uint8_t ILI9341_DISPLAY_ON    = 0x29;
-const uint8_t ILI9341_COLUMN_ADDR   = 0x2A;
-const uint8_t ILI9341_PAGE_ADDR     = 0x2B;
-const uint8_t ILI9341_GRAM          = 0x2C;
-const uint8_t ILI9341_MAC           = 0x36;
-const uint8_t ILI9341_PIXEL_FORMAT  = 0x3A;
-const uint8_t ILI9341_WDB           = 0x51;
-const uint8_t ILI9341_WCD           = 0x53;
-const uint8_t ILI9341_RGB_INTERFACE = 0xB0;
-const uint8_t ILI9341_FRC           = 0xB1;
-const uint8_t ILI9341_BPC           = 0xB5;
-const uint8_t ILI9341_DFC           = 0xB6;
-const uint8_t ILI9341_POWER1        = 0xC0;
-const uint8_t ILI9341_POWER2        = 0xC1;
-const uint8_t ILI9341_VCOM1         = 0xC5;
-const uint8_t ILI9341_VCOM2         = 0xC7;
-const uint8_t ILI9341_POWERA        = 0xCB;
-const uint8_t ILI9341_POWERB        = 0xCF;
-const uint8_t ILI9341_PGAMMA        = 0xE0;
-const uint8_t ILI9341_NGAMMA        = 0xE1;
-const uint8_t ILI9341_DTCA          = 0xE8;
-const uint8_t ILI9341_DTCB          = 0xEA;
-const uint8_t ILI9341_POWER_SEQ     = 0xED;
-const uint8_t ILI9341_3GAMMA_EN     = 0xF2;
-const uint8_t ILI9341_INTERFACE     = 0xF6;
-const uint8_t ILI9341_PRC           = 0xF7;
-
-}; // namespace ili9341
 
 /***************************************************************************************************
  *                              PUBLIC FUNCTION PROTOTYPES
@@ -232,6 +245,17 @@ static uint8_t _get(void)
     return result;
 }
 
+void _rotate(uint8_t _rot)
+{
+    uint8_t rot_cmd[] = {2, ILI9341_MAC, MAC_ML | MAC_MH};
+    
+    rot_mode = _rot;
+    
+    rot_cmd[2] |= rot_mode;
+    
+    ili9341::send_cmd(rot_cmd);
+}
+
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
@@ -241,7 +265,14 @@ namespace ili9341
 
 bmp_size_t get_data_size(const rect_t * _rect)
 {
-    return (bmp_size_t)(_rect->x2 - _rect->x1 + 1) * (_rect->y2 - _rect->y1 + 1);
+    if (_rect != NULL)
+    {
+        return (bmp_size_t)(_rect->x2 - _rect->x1 + 1) * (_rect->y2 - _rect->y1 + 1);
+    }
+    else
+    {
+        return LCD_WIDTH * LCD_HEIGHT;
+    }
 }
 
 void send_data(const uint8_t * _data, const bmp_size_t _size)
@@ -267,29 +298,6 @@ void send_cmd(const uint8_t * _data)
 
 void set_rect(const rect_t * _rect)
 {
-    static uint8_t column[6] = {5, ILI9341_COLUMN_ADDR};
-    static uint8_t row   [6] = {5, ILI9341_PAGE_ADDR};
-    
-    if (_rect == NULL) return;
-    
-    column[2] = _rect->x1 >> 8;
-    column[3] = _rect->x1 & 0xFF;
-    column[4] = _rect->x2 >> 8;
-    column[5] = _rect->x2 & 0xFF;
-    
-    row[2] = _rect->y1 >> 8;
-    row[3] = _rect->y1 & 0xFF;
-    row[4] = _rect->y2 >> 8;
-    row[5] = _rect->y2 & 0xFF;
-    
-    send_cmd(column);
-    send_cmd(row);
-
-    send_cmd((const uint8_t []){1, ILI9341_GRAM});
-}
-
-void fill_rect(const rect_t * const _rect, const color_t _color)
-{
     rect_t rect;
     
     if (_rect != NULL)
@@ -306,10 +314,34 @@ void fill_rect(const rect_t * const _rect, const color_t _color)
             .y2 = LCD_HEIGHT - 1,
         };
     }
+
     
-    set_rect(&rect); 
+    static uint8_t column[6] = {5, ILI9341_COLUMN_ADDR};
+    static uint8_t row   [6] = {5, ILI9341_PAGE_ADDR};
     
-    for(bmp_size_t i = get_data_size(&rect);
+    if (_rect == NULL) return;
+    
+    column[2] = rect.x1 >> 8;
+    column[3] = rect.x1 & 0xFF;
+    column[4] = rect.x2 >> 8;
+    column[5] = rect.x2 & 0xFF;
+    
+    row[2] = rect.y1 >> 8;
+    row[3] = rect.y1 & 0xFF;
+    row[4] = rect.y2 >> 8;
+    row[5] = rect.y2 & 0xFF;
+    
+    send_cmd(column);
+    send_cmd(row);
+
+    send_cmd((const uint8_t []){1, ILI9341_GRAM});
+}
+
+void fill_rect(const rect_t * const _rect, const color_t _color)
+{
+    set_rect(_rect); 
+    
+    for(bmp_size_t i = get_data_size(_rect);
         i > 0; i--)
     {
         send_data((uint8_t *)&_color, sizeof(_color));
@@ -343,11 +375,7 @@ void init(void)
     send_cmd((const uint8_t []){2 , ILI9341_VCOM2       , 0x86});
 
     //-- pixel orientation and draw direction
-    send_cmd((const uint8_t []){2 , ILI9341_MAC         , 0xD4});
-    /* MY MX MV ML BGR MH 0 0
-     *  0  1  0  0   1  0 0 0 - 0x48 - vertical orientation, top-left start point
-     *  1  1  0  1   0  1 0 0 - 0xD4 - horisontal orientation, top-left start point
-     */
+    _rotate(ILI9341_ROTATE_4);
 
     send_cmd((const uint8_t []){2 , ILI9341_PIXEL_FORMAT, 0x55});
     send_cmd((const uint8_t []){3 , ILI9341_FRC         , 0x00, 0x18});
@@ -363,6 +391,22 @@ void init(void)
 
     send_cmd((const uint8_t []){1 , ILI9341_DISPLAY_ON});
     _delay(100);
+}
+
+void scroll(const uint16_t _scr)
+{
+    _rotate(rot_mode ^ MAC_MV);
+    
+    uint8_t scroll_set[] = {7, ILI9341_VSCRDEF, 0, 0, 0, 0, 0, 0};
+    uint8_t scroll[] = {3, ILI9341_VSCRSADD, 0, 0};
+    
+    *((uint16_t *)&scroll_set[4]) = (rot_mode & MAC_MV) ? LCD_WIDTH : LCD_HEIGHT;
+    *((uint16_t *)&scroll[2]) = _scr;
+    
+    send_cmd(scroll_set);
+    send_cmd(scroll);
+    
+    _rotate(rot_mode ^ MAC_MV);   
 }
 
 }; // namespace ili9341

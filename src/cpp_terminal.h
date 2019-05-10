@@ -57,6 +57,7 @@ private:
     uint16_t buf_ptr_;
     uint16_t scroll_ptr_;
     crd_t cursor_;
+//    add_to_buf_(const char * const, const uint16_t);
 
 public:
     cpp_terminal(const uint16_t _x,

@@ -47,48 +47,12 @@ CS          A3          PB0
  *                                       DEFINITIONS
  **************************************************************************************************/
 
-namespace ili9341
-{
-
-//-- lcd depend defines
-
-extern const uint16_t LCD_WIDTH ;
-extern const uint16_t LCD_HEIGHT;
-
-extern const uint8_t ILI9341_RESET        ;
-extern const uint8_t ILI9341_SLEEP_OUT    ;
-extern const uint8_t ILI9341_GAMMA        ;
-extern const uint8_t ILI9341_DISPLAY_OFF  ;
-extern const uint8_t ILI9341_DISPLAY_ON   ;
-extern const uint8_t ILI9341_COLUMN_ADDR  ;
-extern const uint8_t ILI9341_PAGE_ADDR    ;
-extern const uint8_t ILI9341_GRAM         ;
-extern const uint8_t ILI9341_MAC          ;
-extern const uint8_t ILI9341_PIXEL_FORMAT ;
-extern const uint8_t ILI9341_WDB          ;
-extern const uint8_t ILI9341_WCD          ;
-extern const uint8_t ILI9341_RGB_INTERFACE;
-extern const uint8_t ILI9341_FRC          ;
-extern const uint8_t ILI9341_BPC          ;
-extern const uint8_t ILI9341_DFC          ;
-extern const uint8_t ILI9341_POWER1       ;
-extern const uint8_t ILI9341_POWER2       ;
-extern const uint8_t ILI9341_VCOM1        ;
-extern const uint8_t ILI9341_VCOM2        ;
-extern const uint8_t ILI9341_POWERA       ;
-extern const uint8_t ILI9341_POWERB       ;
-extern const uint8_t ILI9341_PGAMMA       ;
-extern const uint8_t ILI9341_NGAMMA       ;
-extern const uint8_t ILI9341_DTCA         ;
-extern const uint8_t ILI9341_DTCB         ;
-extern const uint8_t ILI9341_POWER_SEQ    ;
-extern const uint8_t ILI9341_3GAMMA_EN    ;
-extern const uint8_t ILI9341_INTERFACE    ;
-extern const uint8_t ILI9341_PRC          ;
-
 /***************************************************************************************************
  *                                      PUBLIC TYPES
  **************************************************************************************************/
+
+namespace ili9341
+{
 
 typedef struct
 {
@@ -97,6 +61,18 @@ typedef struct
 
 typedef uint32_t bmp_size_t;
 typedef uint16_t color_t;
+
+typedef enum : uint8_t
+{
+    ROT_0,
+    ROT_1,
+    ROT_2,
+    ROT_3,
+    ROT_4,
+    ROT_5,
+    ROT_6,
+    ROT_7,
+} rot_t;
 
 /***************************************************************************************************
  *                               PRIVATE FUNCTION PROTOTYPES
@@ -121,6 +97,7 @@ void set_rect(const rect_t * _rect);
 void fill_rect(const rect_t * const _rect, const color_t _color);
 void draw_bmp(const rect_t * _rect, const color_t * _bmp);
 void init(void);
+void scroll(const uint16_t);
 
 /***************************************************************************************************
  *                                      EXTERNAL DATA

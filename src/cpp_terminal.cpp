@@ -27,6 +27,8 @@
  *                                       DEFINITIONS
  **************************************************************************************************/
 
+#define TAB_SIZE 4
+
 /***************************************************************************************************
  *                                      PUBLIC TYPES
  **************************************************************************************************/
@@ -83,7 +85,7 @@ cpp_terminal::cpp_terminal(
 {
     clear();
 };
-    
+
 void cpp_terminal::clear(void)
 {
     buf_ptr_ = scroll_ptr_ = 0;
@@ -112,30 +114,91 @@ void cpp_terminal::print(const char * const _str)
     
     while(len > 0)
     {
-        uint8_t print_len = win_size_.y - cursor_.y;
-        if (len < print_len) print_len = len;
+        uint8_t print_len = 1;
         
-        draw(win_crd_.x + cursor_.x * font_->attr.height_glyph,
-             win_crd_.y + cursor_.y * font_->attr.width_glyph,
-             str, print_len);
-        
-        // Перевод курсора
-        cursor_.y += print_len;
-        
-        if (cursor_.y >= win_size_.y)
+        switch (str[0])
         {
-            cursor_.y = 0;
-            cursor_.x++;
-            
-            if (cursor_.x >= win_size_.x)
+            case '\a': // BELL
             {
-                // TO_DO реализовать прокручивание экрана
+                // TO_DO beep
             }
+            break;
+            
+            case '\b': // BACKSPACE
+            {
+                if (cursor_.y > 0)
+                {
+                    cursor_.y--;
+                }
+                else if (cursor_.x > 0)
+                {
+                    cursor_.x--;
+                    cursor_.y = win_size_.y - 1;
+                }
+                
+                draw(win_crd_.x + cursor_.x * font_->attr.height_glyph,
+                    win_crd_.y + cursor_.y * font_->attr.width_glyph,
+                    " ", 1);
+            }
+            break;
+                
+            case '\t': // CHARACTER TABULATION 
+            {
+                cursor_.y = cursor_.y / TAB_SIZE + 1;
+                cursor_.y *= TAB_SIZE;
+            }
+            break;
+
+            case '\n': // LINE FEED
+            case '\v': // LINE TABULATION 
+            {
+                cursor_.x++;
+            }
+            break;
+            
+            case '\f': // FORM FEED
+            {
+                clear();
+            }
+            break;
+
+            case '\r': // CARRIAGE RETURN
+            {
+                cursor_.y = 0;
+            }
+            break;
+                        
+            default:
+            {
+                print_len = win_size_.y - cursor_.y;
+                
+                print_len = draw(win_crd_.x + cursor_.x * font_->attr.height_glyph,
+                    win_crd_.y + cursor_.y * font_->attr.width_glyph,
+                    str, print_len);
+                
+                // Перевод курсора
+                cursor_.y += print_len;
+                
+                // Если ничего не напечатали - значит непечатный символ, который не был обработан выше
+                if (print_len == 0) print_len = 1;
+            }
+            break;
         }
         
         // Переводим указатель
         str += print_len;
         len -= print_len;
+
+        if (cursor_.y >= win_size_.y)
+        {
+            cursor_.y = 0;
+            cursor_.x++;
+        }
+
+        if (cursor_.x >= win_size_.x)
+        {
+            // TO_DO реализовать прокручивание экрана
+        }
         
         // TO_DO реализовать работу с буфером
     };

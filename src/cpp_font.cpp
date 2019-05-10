@@ -105,7 +105,7 @@ void cpp_font::set_brush(const brush_t &_brush)
     brush_ = _brush;
 };
 
-void cpp_font::draw(const uint16_t _x, const uint16_t _y, const char * const _str, const uint8_t _len)
+uint8_t cpp_font::draw(const uint16_t _x, const uint16_t _y, const char * const _str, const uint8_t _len)
 {
     uint8_t len = (strlen(_str) < _len) ? strlen(_str) : _len;
 
@@ -119,7 +119,10 @@ void cpp_font::draw(const uint16_t _x, const uint16_t _y, const char * const _st
 
     for(uint8_t i = 0; i < len; i++)
     {
-        if ((_str[i] >= font_->attr.start_code) && (_str[i] <= font_->attr.end_code))
+        if (   _str[i] >= font_->attr.start_code 
+            && _str[i] <= font_->attr.end_code 
+            && _str[i] >= ' '
+            )
         {    
             const uint8_t * pixel_ptr = 
                 &(font_->p_font[(uint16_t)(_str[i] - font_->attr.start_code) * font_->attr.glyph_size]);
@@ -139,11 +142,17 @@ void cpp_font::draw(const uint16_t _x, const uint16_t _y, const char * const _st
                     
                     ili9341::send_data((const uint8_t *)&tmp_color, sizeof(ili9341::color_t));
                     
-                    if (++curr_pixel >= max_pixel_cnt) return;
+                    if (++curr_pixel >= max_pixel_cnt) return i + 1;
                 }
             }
         }
+        else
+        {
+            return i;
+        }
     }
+    
+    return len;
 };
 
 }; // namespace font

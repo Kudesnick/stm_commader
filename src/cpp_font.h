@@ -86,7 +86,7 @@ protected:
 public:
     cpp_font(const font_t&);
     void set_brush(const brush_t&);
-    void draw(const uint16_t, const uint16_t, const char * const, const uint8_t);
+    uint8_t draw(const uint16_t, const uint16_t, const char * const, const uint8_t);
 };
 
 ili9341::color_t color_converter(const font::color_t &_color);
