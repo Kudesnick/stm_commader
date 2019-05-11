@@ -66,7 +66,7 @@ int main(void)
     ili9341::init();
 
     static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
-    term.set_brush({font::GREEN, font::BLACK});
+    term.set_brush({font::MAGENTA, font::BLACK});
     term.print(demo_str);
 
     term.scroll(2, 0, true);
