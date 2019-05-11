@@ -25,6 +25,7 @@
 #include "ff.h"
 #include "bsp_gpio.h"
 #include "cpp_terminal.h"
+#include "cpp_font.h"
 
 extern "C"
 {
@@ -47,7 +48,7 @@ const char * const demo_str =
 "стандартное консольное окошко, которое часто ошибочно называют «cmd.exe». И мало кто знает о "
 "существовании множества других эмуляторов терминала. Известных шеллов больше, их целых два: "
 "cmd.exe и powershell.exe. И хотя есть как минимум три порта bash (MinGW, CygWin, GIT) многие "
-"юниксоиды предпочитают ругать \r\n\tcmd.exe\b\b\b.exe. ";
+"юниксоиды предпочитают ругать \r\n\tcmd.exe\b\b\bexe. ";
 
 int main(void)
 {
@@ -65,6 +66,7 @@ int main(void)
     ili9341::init();
 
     static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
+    term.set_brush({font::GREEN, font::BLACK});
     term.print(demo_str);
 
 //    ili9341::scroll(16);

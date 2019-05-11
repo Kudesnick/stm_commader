@@ -204,6 +204,11 @@ void cpp_terminal::print(const char * const _str)
     };
 };
 
+void cpp_terminal::set_brush(const font::brush_t &_brush)
+{
+    brush_ = _brush;
+}
+
 }; // namespace terminal
 
 /***************************************************************************************************
