@@ -87,7 +87,8 @@ extern "C"
 #define ILI9341_DISPLAY_ON    0x29
 #define ILI9341_COLUMN_ADDR   0x2A
 #define ILI9341_PAGE_ADDR     0x2B
-#define ILI9341_GRAM          0x2C
+#define ILI9341_RAMWR         0x2C
+#define ILI9341_RAMRD         0x2E
 #define ILI9341_VSCRDEF       0x33
 #define ILI9341_MAC           0x36
 #define ILI9341_VSCRSADD      0x37
@@ -219,13 +220,13 @@ static void _set(uint16_t _data)
     {
         GPIO_PinWrite(pins[i].port, pins[i].pin, _data & 1);
     }
-    
+        
     GPIO_PinWrite(LCD_PIN_WR, 1);
 }
 
 static uint8_t _get(void)
 {
-    uint8_t result;
+    uint8_t result = 0;
     
     GPIO_PinWrite(LCD_PIN_RS, 1);
     GPIO_PinWrite(LCD_PIN_RD, 0);
@@ -233,13 +234,13 @@ static uint8_t _get(void)
     if (data_mode != GPIO_MODE_INPUT)
     {
         for (uint8_t i = 0; i < 8; i++)
-            GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_PULL_UP, GPIO_MODE_INPUT);
+            GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_FLOATING, GPIO_MODE_INPUT);
         
         data_mode = GPIO_MODE_INPUT;
     }
 
     GPIO_PinWrite(LCD_PIN_RD, 1);
-    
+        
     for (uint8_t i = 0; i < 8; i++)
     {
         result <<= 1;
@@ -267,7 +268,7 @@ void _rotate(uint8_t _rot)
 namespace ili9341
 {
 
-bmp_size_t get_data_size(const rect_t * _rect)
+bmp_size_t get_pixel_cnt(const rect_t * _rect)
 {
     if (_rect != NULL)
     {
@@ -287,6 +288,21 @@ void send_data(const uint8_t * _data, const bmp_size_t _size)
     }
 }
 
+void get_data(uint8_t * _data, const bmp_size_t _size)
+{
+    for (bmp_size_t i = 0; i < _size >> 1; i++)
+    {
+        uint8_t r = _get();
+        uint8_t g = _get();
+        uint8_t b = _get();
+
+        // origin. (see https://www.avrfreaks.net/forum/reading-pixels-gram-memory-ili9341-and-ili9325)
+        // uint16_t color =  ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+        uint16_t color =  ((r & 0xFC) << 9) | ((g & 0xFC) << 4) | (b >> 2);
+        ((uint16_t *)_data)[i] = color ;
+    }
+}
+
 void send_cmd(const uint8_t * _data)
 {
     if (_data != NULL && _data[0] > 0)
@@ -300,7 +316,7 @@ void send_cmd(const uint8_t * _data)
     }
 }
 
-void set_rect(const rect_t * _rect)
+void set_rect(const rect_t * _rect, const bool _to_read)
 {
     rect_t rect;
     
@@ -338,14 +354,21 @@ void set_rect(const rect_t * _rect)
     send_cmd(column);
     send_cmd(row);
 
-    send_cmd((const uint8_t []){1, ILI9341_GRAM});
+    if (_to_read)
+    {
+        send_cmd((const uint8_t []){1, ILI9341_RAMRD});
+    }
+    else
+    {
+        send_cmd((const uint8_t []){1, ILI9341_RAMWR});
+    }
 }
 
 void fill_rect(const rect_t * const _rect, const color_t _color)
 {
     set_rect(_rect); 
     
-    for(bmp_size_t i = get_data_size(_rect);
+    for(bmp_size_t i = get_pixel_cnt(_rect);
         i > 0; i--)
     {
         send_data((uint8_t *)&_color, sizeof(_color));
@@ -356,7 +379,7 @@ void draw_bmp(const rect_t * _rect, const color_t * _bmp)
 {
     set_rect(_rect);
     
-    send_data((uint8_t *)_bmp, get_data_size(_rect) * sizeof(color_t));
+    send_data((uint8_t *)_bmp, get_pixel_cnt(_rect) * sizeof(color_t));
 }
 
 void init(void)

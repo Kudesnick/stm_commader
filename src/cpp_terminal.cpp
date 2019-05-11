@@ -20,6 +20,8 @@
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
+#include <stdlib.h>
+
 #include "cpp_terminal.h"
 #include "bsp_ili9341.h"
 
@@ -207,6 +209,87 @@ void cpp_terminal::print(const char * const _str)
 void cpp_terminal::set_brush(const font::brush_t &_brush)
 {
     brush_ = _brush;
+}
+
+void cpp_terminal::rect_calc_of_str_(const uint8_t _n, ili9341::rect_t &_rect)
+{
+    _rect.x1 = _n * font_->attr.height_glyph;
+    _rect.y1 = 0;
+    _rect.x2 = _rect.x1 + font_->attr.height_glyph - 1;
+    _rect.y2 = win_size_.y * font_->attr.width_glyph - 1;
+};
+
+void cpp_terminal::rect_calc_of_col_(const uint8_t _n, ili9341::rect_t &_rect)
+{
+    _rect.x1 = 0;
+    _rect.y1 = _n * font_->attr.width_glyph;
+    _rect.x2 = win_size_.x * font_->attr.height_glyph - 1;
+    _rect.y2 = _rect.y1 + font_->attr.width_glyph - 1;
+};
+
+void cpp_terminal::scroll(const int16_t _x, const int16_t _y, const bool _cycle)
+{
+    ili9341::rect_t rect;
+    uint8_t * curr_buf = NULL;
+    uint8_t * first_buf = NULL;
+    
+    if (_x != 0)
+    {
+        rect_calc_of_str_(0, rect);
+        uint16_t buf_size = ili9341::get_pixel_cnt(&rect) * sizeof(ili9341::color_t);
+        curr_buf = static_cast<uint8_t *>(malloc(buf_size));
+        
+        // Копируем первую строку
+        if (_cycle)
+        {
+            first_buf = static_cast<uint8_t *>(malloc(buf_size));
+            
+            rect_calc_of_str_((_x > 0) ? 0 : win_size_.x - 1, rect);
+            
+            ili9341::set_rect(&rect, true);
+            ili9341::get_data(first_buf, buf_size);
+        }
+
+        for (int8_t x = _x; x > 0; x--)
+        {
+            for (uint8_t i = 1; i < win_size_.x; i++)
+            {
+                rect_calc_of_str_(i, rect);
+                ili9341::set_rect(&rect, true);
+                ili9341::get_data(curr_buf, buf_size);
+                rect_calc_of_str_(i - 1, rect);
+                ili9341::set_rect(&rect, false);
+                ili9341::send_data(curr_buf, buf_size);
+            }
+        }
+        for (int8_t x = _x; x < 0; x++)
+        {
+            for (int8_t i = win_size_.x - 2; i > 0; i--)
+            {
+                rect_calc_of_str_(i, rect);
+                ili9341::set_rect(&rect, true);
+                ili9341::get_data(curr_buf, buf_size);
+                rect_calc_of_str_(i + 1, rect);
+                ili9341::set_rect(&rect, false);
+                ili9341::send_data(curr_buf, buf_size);
+            }
+        }
+        
+        rect_calc_of_str_((_x < 0) ? 0 : win_size_.x - 1, rect);
+        
+        if (first_buf != NULL)
+        {
+            ili9341::set_rect(&rect, true);
+            ili9341::get_data(first_buf, buf_size);
+        }
+        else
+        {
+            ili9341::fill_rect(&rect, brush_.bg);
+        }
+    }
+    
+    if (curr_buf  != NULL) free(curr_buf);
+    if (first_buf != NULL) free(first_buf);
 }
 
 }; // namespace terminal

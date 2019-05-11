@@ -69,8 +69,8 @@ int main(void)
     term.set_brush({font::GREEN, font::BLACK});
     term.print(demo_str);
 
-//    ili9341::scroll(16);
-//    term.print("Test string after scroll. ");
+    term.scroll(2, 0, true);
+    term.print("Test string after scroll. ");
     
 for(;;){};
     

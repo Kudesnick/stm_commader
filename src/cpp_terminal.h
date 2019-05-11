@@ -57,6 +57,8 @@ private:
     uint16_t buf_ptr_;
     uint16_t scroll_ptr_;
     crd_t cursor_;
+    void rect_calc_of_str_(const uint8_t, ili9341::rect_t&);
+    void rect_calc_of_col_(const uint8_t, ili9341::rect_t&);
 //    add_to_buf_(const char * const, const uint16_t);
 
 public:
@@ -72,6 +74,7 @@ public:
     void print(const char * const _str);
     void set_brush(const font::brush_t &_brush);
     void set_cursor(const int16_t _x, const int16_t _y);
+    void scroll(const int16_t _x, const int16_t _y, bool _cycle = false);
 };
 
 }; // namespace terminal

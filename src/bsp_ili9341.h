@@ -90,10 +90,11 @@ typedef enum : uint8_t
  *                              PUBLIC FUNCTION PROTOTYPES
  **************************************************************************************************/
 
-bmp_size_t get_data_size(const rect_t * _rect);
+bmp_size_t get_pixel_cnt(const rect_t * _rect);
 void send_data(const uint8_t * _data, const bmp_size_t _size);
+void get_data(uint8_t * _data, const bmp_size_t _size);
 void send_cmd(const uint8_t * _data);
-void set_rect(const rect_t * _rect);
+void set_rect(const rect_t * _rect, const bool _to_read = false);
 void fill_rect(const rect_t * const _rect, const color_t _color);
 void draw_bmp(const rect_t * _rect, const color_t * _bmp);
 void init(void);

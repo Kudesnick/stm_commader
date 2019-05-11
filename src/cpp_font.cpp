@@ -74,22 +74,22 @@ ili9341::color_t color_converter(const font::color_t &_color)
     const uint16_t color[] =
     {
         //GGGRRRRRBBBBBGGG
-        0b0000000000000000, // BLACK_D
-        0b0000000001111000, // BLUE_D
-        0b0000111100000000, // RED_D
+        0b0000000000000000, // BLACK_D  
+        0b0000000001111000, // BLUE_D   
+        0b0000111100000000, // RED_D    
         0b0000111101111000, // MAGENTA_D
         0b1110000000000111, // GREEN_D  
         0b1110000001111111, // CYAN_D   
         0b1110111100000111, // YELLO_D  
         0b1110111101111011, // WHITE_D  
-        0b0000000000000000, // BLACK   
-        0b0000000011111000, // BLUE   
-        0b0001111100000000, // RED     
-        0b0001111111111000, // MAGENTA 
-        0b1110000000000111, // GREEN   
-        0b1110000011111111, // CYAN    
-        0b1111111100000111, // YELLO   
-        0b1111111111111111, // WHITE   
+        0b0000000000000000, // BLACK    
+        0b0000000011111000, // BLUE     
+        0b0001111100000000, // RED      
+        0b0001111111111000, // MAGENTA  
+        0b1110000000000111, // GREEN    
+        0b1110000011111111, // CYAN     
+        0b1111111100000111, // YELLO    
+        0b1111111111111111, // WHITE    
     };
     
     return color[_color];
@@ -114,7 +114,7 @@ uint8_t cpp_font::draw(const uint16_t _x, const uint16_t _y, const char * const 
     rect.y2 = _y + font_->attr.width_glyph * len - 1;
     ili9341::set_rect(&rect);    
     
-    ili9341::bmp_size_t max_pixel_cnt = ili9341::get_data_size(&rect);
+    ili9341::bmp_size_t max_pixel_cnt = ili9341::get_pixel_cnt(&rect);
     ili9341::bmp_size_t curr_pixel = 0;
 
     for(uint8_t i = 0; i < len; i++)
