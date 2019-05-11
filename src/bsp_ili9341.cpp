@@ -80,6 +80,8 @@ extern "C"
 
 #define ILI9341_RESET         0x01
 #define ILI9341_SLEEP_OUT     0x11
+#define ILI9341_PTLON         0x12
+#define ILI9341_NORON         0x13
 #define ILI9341_GAMMA         0x26
 #define ILI9341_DISPLAY_OFF   0x28
 #define ILI9341_DISPLAY_ON    0x29
@@ -89,6 +91,8 @@ extern "C"
 #define ILI9341_VSCRDEF       0x33
 #define ILI9341_MAC           0x36
 #define ILI9341_VSCRSADD      0x37
+#define ILI9341_IDMOFF        0x38
+#define ILI9341_IDMON         0x39
 #define ILI9341_PIXEL_FORMAT  0x3A
 #define ILI9341_WDB           0x51
 #define ILI9341_WCD           0x53
@@ -247,7 +251,7 @@ static uint8_t _get(void)
 
 void _rotate(uint8_t _rot)
 {
-    uint8_t rot_cmd[] = {2, ILI9341_MAC, MAC_ML | MAC_MH};
+    uint8_t rot_cmd[3] = {2, ILI9341_MAC, MAC_ML | MAC_MH};
     
     rot_mode = _rot;
     
@@ -381,8 +385,6 @@ void init(void)
     send_cmd((const uint8_t []){3 , ILI9341_FRC         , 0x00, 0x18});
     send_cmd((const uint8_t []){4 , ILI9341_DFC         , 0x08, 0x82, 0x27});
     send_cmd((const uint8_t []){2 , ILI9341_3GAMMA_EN   , 0x00});
-    send_cmd((const uint8_t []){5 , ILI9341_COLUMN_ADDR , 0x00, 0x00, 0x00, 0xEF});
-    send_cmd((const uint8_t []){5 , ILI9341_PAGE_ADDR   , 0x00, 0x00, 0x01, 0x3F});
     send_cmd((const uint8_t []){2 , ILI9341_GAMMA       , 0x01});
     send_cmd((const uint8_t []){16, ILI9341_PGAMMA      , 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1, 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00});
     send_cmd((const uint8_t []){16, ILI9341_NGAMMA      , 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F});
@@ -395,18 +397,17 @@ void init(void)
 
 void scroll(const uint16_t _scr)
 {
-    _rotate(rot_mode ^ MAC_MV);
+    static uint8_t scroll_set[8] = {7, ILI9341_VSCRDEF, 0, 0, 0, 0, 0, 0};
+    static uint8_t scroll[4] = {3, ILI9341_VSCRSADD, 0, 0};
+    uint16_t scroll_lines = LCD_HEIGHT;
     
-    uint8_t scroll_set[] = {7, ILI9341_VSCRDEF, 0, 0, 0, 0, 0, 0};
-    uint8_t scroll[] = {3, ILI9341_VSCRSADD, 0, 0};
-    
-    *((uint16_t *)&scroll_set[4]) = (rot_mode & MAC_MV) ? LCD_WIDTH : LCD_HEIGHT;
-    *((uint16_t *)&scroll[2]) = _scr;
-    
+    scroll_set[4] = scroll_lines >> 8;
+    scroll_set[5] = scroll_lines & 0xFF;
+    scroll[2] = _scr >> 8;    
+    scroll[3] = _scr & 0xFF;  
+
     send_cmd(scroll_set);
-    send_cmd(scroll);
-    
-    _rotate(rot_mode ^ MAC_MV);   
+    send_cmd(scroll);  
 }
 
 }; // namespace ili9341
