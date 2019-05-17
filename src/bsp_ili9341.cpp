@@ -71,6 +71,8 @@ extern "C"
 #define LCD_PIN_WR PORTA_01
 #define LCD_PIN_CS PORTB_00
 
+#define LCD_PIN_SPEED GPIO_MODE_OUT10MHZ
+
 #define LCD_CMD_WR           (1 <<  9)
 #define LCD_DATA_WR (1 << 8 | 1 <<  9)
 #define LCD_DATA_RD (1 << 8 | 1 << 10)
@@ -197,7 +199,7 @@ static void _delay(volatile uint16_t _tm)
 void _hw_init(void)
 {
     for (uint8_t i = 0; i < countof(pins); i++)
-        GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_OUT_PUSH_PULL, GPIO_MODE_OUT2MHZ);
+        GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_OUT_PUSH_PULL, LCD_PIN_SPEED);
     
     GPIO_PinWrite(LCD_PIN_CS, 1);
     GPIO_PinWrite(LCD_PIN_RD, 1);
@@ -208,12 +210,12 @@ void _hw_init(void)
 
 static void _set(uint16_t _data)
 {
-    if (data_mode != GPIO_MODE_OUT2MHZ)
+    if (data_mode != LCD_PIN_SPEED)
     {
         for (uint8_t i = 0; i < 8; i++)
-            GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_OUT_PUSH_PULL, GPIO_MODE_OUT2MHZ);
+            GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_OUT_PUSH_PULL, LCD_PIN_SPEED);
         
-        data_mode = GPIO_MODE_OUT2MHZ;
+        data_mode = LCD_PIN_SPEED;
     }
     
     for (uint8_t i = 0; i < countof(pins); i++, _data >>= 1)
@@ -290,6 +292,11 @@ void send_data(const uint8_t * _data, const bmp_size_t _size)
 
 void get_data(uint8_t * _data, const bmp_size_t _size)
 {
+    if (data_mode != GPIO_MODE_INPUT)
+    {
+        _get();
+    }
+    
     for (bmp_size_t i = 0; i < _size >> 1; i++)
     {
         uint8_t r = _get();
@@ -297,9 +304,9 @@ void get_data(uint8_t * _data, const bmp_size_t _size)
         uint8_t b = _get();
 
         // origin. (see https://www.avrfreaks.net/forum/reading-pixels-gram-memory-ili9341-and-ili9325)
-        // uint16_t color =  ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-        uint16_t color =  ((r & 0xFC) << 9) | ((g & 0xFC) << 4) | (b >> 2);
-        ((uint16_t *)_data)[i] = color ;
+        uint16_t color =  ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+        // uint16_t color =  ((r & 0xFC) << 9) | ((g & 0xFC) << 4) | (b >> 2);
+        ((uint16_t *)_data)[i] = (color >> 8) | (color << 8);
     }
 }
 
