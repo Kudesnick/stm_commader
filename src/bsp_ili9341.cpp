@@ -235,7 +235,7 @@ static uint8_t _get(void)
     
     if (data_mode != GPIO_MODE_INPUT)
     {
-        for (uint8_t i = 0; i < 8; i++)
+        for (auto i = 0; i < 8; i++)
             GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_FLOATING, GPIO_MODE_INPUT);
         
         data_mode = GPIO_MODE_INPUT;
@@ -243,7 +243,7 @@ static uint8_t _get(void)
 
     GPIO_PinWrite(LCD_PIN_RD, 1);
         
-    for (uint8_t i = 0; i < 8; i++)
+    for (auto i = 0; i < 8; i++)
     {
         result <<= 1;
         result |= GPIO_PinRead(pins[i].port, pins[i].pin);
@@ -261,6 +261,26 @@ void _rotate(uint8_t _rot)
     rot_cmd[2] |= rot_mode;
     
     ili9341::send_cmd(rot_cmd);
+}
+
+__INLINE uint16_t _rgb_converter(const uint8_t _r, const uint8_t _g, const uint8_t _b)
+{
+    uint16_t R = _r >> 3;
+    uint16_t G = _g >> 2;
+    uint16_t B = _b >> 3;
+    
+    uint16_t color = R | (G << 5) | (B << 11);
+    
+    return (color >> 8) | (color << 8);
+};
+
+__INLINE uint8_t _data_to_color(const uint8_t _c)
+{
+    uint8_t res = (_c & ~0x03) << 2;
+    
+    if (res > 0) res |= 0x0F;
+    
+    return res;
 }
 
 /***************************************************************************************************
@@ -299,14 +319,11 @@ void get_data(uint8_t * _data, const bmp_size_t _size)
     
     for (bmp_size_t i = 0; i < _size >> 1; i++)
     {
-        uint8_t r = _get();
-        uint8_t g = _get();
-        uint8_t b = _get();
+        uint8_t b = _data_to_color(_get());
+        uint8_t g = _data_to_color(_get());
+        uint8_t r = _data_to_color(_get());
 
-        // origin. (see https://www.avrfreaks.net/forum/reading-pixels-gram-memory-ili9341-and-ili9325)
-        uint16_t color =  ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-        // uint16_t color =  ((r & 0xFC) << 9) | ((g & 0xFC) << 4) | (b >> 2);
-        ((uint16_t *)_data)[i] = (color >> 8) | (color << 8);
+       ((uint16_t *)_data)[i] = _rgb_converter(r, g , b);
     }
 }
 
