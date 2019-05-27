@@ -270,7 +270,7 @@ void cpp_terminal::scroll(int16_t _x, int16_t _y, const bool _cycle)
             
             if (_x < 0)
             {
-                for (auto i = win_size_.x - 2; i > 0; i--)
+                for (auto i = win_size_.x - 2; i >= 0; i--)
                 {
                     rect_calc_of_str_(i, rect);
                     ili9341::set_rect(&rect, true);
