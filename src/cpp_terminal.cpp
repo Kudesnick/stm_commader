@@ -227,7 +227,7 @@ void cpp_terminal::rect_calc_of_col_(const uint8_t _n, ili9341::rect_t &_rect)
     _rect.y2 = _rect.y1 + font_->attr.width_glyph - 1;
 };
 
-void cpp_terminal::scroll(const int16_t _x, const int16_t _y, const bool _cycle)
+void cpp_terminal::scroll(int16_t _x, int16_t _y, const bool _cycle)
 {
     ili9341::rect_t rect;
     uint8_t * curr_buf = NULL;
@@ -239,57 +239,67 @@ void cpp_terminal::scroll(const int16_t _x, const int16_t _y, const bool _cycle)
         uint16_t buf_size = ili9341::get_pixel_cnt(&rect) * sizeof(ili9341::color_t);
         curr_buf = static_cast<uint8_t *>(malloc(buf_size));
         
-        // Копируем первую строку
         if (_cycle)
         {
             first_buf = static_cast<uint8_t *>(malloc(buf_size));
-            
-            rect_calc_of_str_((_x > 0) ? 0 : win_size_.x - 1, rect);
-            
-            ili9341::set_rect(&rect, true);
-            ili9341::get_data(first_buf, buf_size);
         }
-
-        for (int8_t x = _x; x > 0; x--)
-        {
-            for (uint8_t i = 1; i < win_size_.x; i++)
-            {
-                rect_calc_of_str_(i, rect);
-                ili9341::set_rect(&rect, true);
-                ili9341::get_data(curr_buf, buf_size);
-                rect_calc_of_str_(i - 1, rect);
-                ili9341::set_rect(&rect, false);
-                ili9341::send_data(curr_buf, buf_size);
-            }
-        }
-        for (int8_t x = _x; x < 0; x++)
-        {
-            for (int8_t i = win_size_.x - 2; i > 0; i--)
-            {
-                rect_calc_of_str_(i, rect);
-                ili9341::set_rect(&rect, true);
-                ili9341::get_data(curr_buf, buf_size);
-                rect_calc_of_str_(i + 1, rect);
-                ili9341::set_rect(&rect, false);
-                ili9341::send_data(curr_buf, buf_size);
-            }
-        }
-        
-        rect_calc_of_str_((_x < 0) ? 0 : win_size_.x - 1, rect);
-        
-        if (first_buf != NULL)
-        {
-            ili9341::set_rect(&rect, true);
-            ili9341::get_data(first_buf, buf_size);
-        }
-        else
-        {
-            ili9341::fill_rect(&rect, brush_.bg);
-        }
-    }
     
-    if (curr_buf  != NULL) free(curr_buf);
-    if (first_buf != NULL) free(first_buf);
+        while (_x != 0)
+        {
+            // Копируем первую строку
+            if (_cycle)
+            {
+                rect_calc_of_str_((_x > 0) ? 0 : win_size_.x - 1, rect);
+                
+                ili9341::set_rect(&rect, true);
+                ili9341::get_data(first_buf, buf_size);
+            }
+    
+            if (_x > 0)
+            {
+                for (uint8_t i = 1; i < win_size_.x; i++)
+                {
+                    rect_calc_of_str_(i, rect);
+                    ili9341::set_rect(&rect, true);
+                    ili9341::get_data(curr_buf, buf_size);
+                    rect_calc_of_str_(i - 1, rect);
+                    ili9341::set_rect(&rect, false);
+                    ili9341::send_data(curr_buf, buf_size);
+                }
+            }
+            
+            if (_x < 0)
+            {
+                for (auto i = win_size_.x - 2; i > 0; i--)
+                {
+                    rect_calc_of_str_(i, rect);
+                    ili9341::set_rect(&rect, true);
+                    ili9341::get_data(curr_buf, buf_size);
+                    rect_calc_of_str_(i + 1, rect);
+                    ili9341::set_rect(&rect, false);
+                    ili9341::send_data(curr_buf, buf_size);
+                }
+            }
+            
+            rect_calc_of_str_((_x < 0) ? 0 : win_size_.x - 1, rect);
+            
+            if (first_buf != NULL)
+            {
+                ili9341::set_rect(&rect, false);
+                ili9341::send_data(first_buf, buf_size);
+            }
+            else
+            {
+                ili9341::fill_rect(&rect, brush_.bg);
+            }
+            
+            if (_x > 0) _x--;
+            if (_x < 0) _x++;
+        }
+            
+        if (curr_buf  != NULL) free(curr_buf);
+        if (first_buf != NULL) free(first_buf);
+    }
 }
 
 }; // namespace terminal

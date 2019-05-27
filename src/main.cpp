@@ -66,11 +66,12 @@ int main(void)
     ili9341::init();
 
     static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
-    term.set_brush({font::MAGENTA, font::BLACK});
+    term.set_brush({font::CYAN, font::BLACK});
     term.print(demo_str);
 
-    term.scroll(2, 0, true);
+    term.scroll(3, 0, true);
     term.print("Test string after scroll. ");
+    term.scroll(-2, 0, true);
     
 for(;;){};
     
