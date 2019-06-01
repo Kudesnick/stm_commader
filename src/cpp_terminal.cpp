@@ -85,7 +85,7 @@ cpp_terminal::cpp_terminal(
     p_buf_(_buffer),
     buf_size_(_buf_size)
 {
-    clear();
+    // clear();
 };
 
 void cpp_terminal::clear(void)
@@ -290,11 +290,79 @@ void cpp_terminal::scroll(int16_t _x, int16_t _y, const bool _cycle)
             }
             else
             {
-                ili9341::fill_rect(&rect, brush_.bg);
+                ili9341::fill_rect(&rect, font::color_converter(brush_.bg));
             }
             
             if (_x > 0) _x--;
             if (_x < 0) _x++;
+        }
+            
+        if (curr_buf  != NULL) free(curr_buf);
+        if (first_buf != NULL) free(first_buf);
+    }
+    
+    if (_y != 0)
+    {
+        rect_calc_of_col_(0, rect);
+        uint16_t buf_size = ili9341::get_pixel_cnt(&rect) * sizeof(ili9341::color_t);
+        curr_buf = static_cast<uint8_t *>(malloc(buf_size));
+        
+        if (_cycle)
+        {
+            first_buf = static_cast<uint8_t *>(malloc(buf_size));
+        }
+    
+        while (_y != 0)
+        {
+            // Копируем первую строку
+            if (_cycle)
+            {
+                rect_calc_of_col_((_y > 0) ? 0 : win_size_.y - 1, rect);
+                
+                ili9341::set_rect(&rect, true);
+                ili9341::get_data(first_buf, buf_size);
+            }
+    
+            if (_y > 0)
+            {
+                for (uint8_t i = 1; i < win_size_.y; i++)
+                {
+                    rect_calc_of_col_(i, rect);
+                    ili9341::set_rect(&rect, true);
+                    ili9341::get_data(curr_buf, buf_size);
+                    rect_calc_of_col_(i - 1, rect);
+                    ili9341::set_rect(&rect, false);
+                    ili9341::send_data(curr_buf, buf_size);
+                }
+            }
+            
+            if (_y < 0)
+            {
+                for (auto i = win_size_.y - 2; i >= 0; i--)
+                {
+                    rect_calc_of_col_(i, rect);
+                    ili9341::set_rect(&rect, true);
+                    ili9341::get_data(curr_buf, buf_size);
+                    rect_calc_of_col_(i + 1, rect);
+                    ili9341::set_rect(&rect, false);
+                    ili9341::send_data(curr_buf, buf_size);
+                }
+            }
+            
+            rect_calc_of_col_((_y < 0) ? 0 : win_size_.y - 1, rect);
+            
+            if (first_buf != NULL)
+            {
+                ili9341::set_rect(&rect, false);
+                ili9341::send_data(first_buf, buf_size);
+            }
+            else
+            {
+                ili9341::fill_rect(&rect, font::color_converter(brush_.bg));
+            }
+            
+            if (_y > 0) _y--;
+            if (_y < 0) _y++;
         }
             
         if (curr_buf  != NULL) free(curr_buf);

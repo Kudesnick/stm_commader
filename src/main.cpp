@@ -43,12 +43,91 @@ extern "C"
  **************************************************************************************************/
 
 const char * const demo_str = 
-"\r\nЧасто путают терминал и шелл. В тех же *nix есть шеллы (bash, csh, zsh, …) и терминалы "
-"(konsole/guake/yaquake/tilda и т.д. и т.п.) Для мира Windows общеизвестный терминал только один – "
-"стандартное консольное окошко, которое часто ошибочно называют «cmd.exe». И мало кто знает о "
-"существовании множества других эмуляторов терминала. Известных шеллов больше, их целых два: "
-"cmd.exe и powershell.exe. И хотя есть как минимум три порта bash (MinGW, CygWin, GIT) многие "
-"юниксоиды предпочитают ругать \r\n\tcmd.exe\b\b\bexe. ";
+"Соцсети, чаты.. Кто здесь? Я?\r\n"
+"Да, я! Бегу двоичным кодом\r\n"
+"По свитым в пары проводам,\r\n"
+"По магистралям световодов\r\n"
+"\r\n"
+"Я - ваш 3G и GPS,\r\n"
+"Сигнал на старт и остановку.\r\n"
+"Я весь ваш творческий процесс\r\n"
+"Cведу к нажатию на кнопку.\r\n"
+"\r\n"
+"\t#kudesnick\r\nwith love to Speccy and c++";
+
+static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
+
+static font::brush_t brush = {font::GREEN, font::BLACK};
+
+static void color_select(const track_point::key_t _key, const track_point::key_event_t _event)
+{
+    font::color_t curr_color = (_event != track_point::KEY_DOUBLE_CLICK) ? brush.bg : brush.txt;
+    
+    const font::color_t colors[] = {
+        font::BLACK     ,
+        font::BLUE_D    ,
+        font::BLUE      ,
+        font::RED_D     ,
+        font::RED       ,
+        font::MAGENTA_D ,
+        font::MAGENTA   ,
+        font::GREEN_D   ,
+        font::GREEN     ,
+        font::CYAN_D    ,
+        font::CYAN      ,
+        font::YELLOW_D  ,
+        font::YELLOW    ,
+        font::WHITE_D   ,
+        font::WHITE     ,
+    };
+    
+    for (auto i = 0; i < sizeof(colors)/sizeof(colors[0]); i++)
+    {
+        if (colors[i] == curr_color)
+        {
+            if (++i >= sizeof(colors)/sizeof(colors[0])) i = 0;
+            
+            if (_event != track_point::KEY_DOUBLE_CLICK)
+            {
+                brush.bg = colors[i];
+            }
+            else
+            {
+                brush.txt = colors[i];
+            }
+            
+            term.set_brush(brush);
+            term.clear();
+            term.print(demo_str);
+            
+            break;
+        }
+    }
+};
+
+static void move_text(const track_point::key_t _key, const track_point::key_event_t _event)
+{
+    auto x = 0, y = 0;
+    bool cycle;
+    
+    switch(_key)
+    {
+        case track_point::KEY_UP   : x = -1; break;
+        case track_point::KEY_DOWN : x =  1; break;
+        case track_point::KEY_LEFT : y = -1; break;
+        case track_point::KEY_RIGHT: y =  1; break;
+        default: return;
+    }
+    
+    switch(_event)
+    {
+        case track_point::KEY_CLICK     : cycle = true ; break;
+        case track_point::KEY_LONG_PRESS: cycle = false; break;
+        default: return;
+    }
+    
+    term.scroll(x, y, cycle);
+};
 
 int main(void)
 {
@@ -63,16 +142,26 @@ int main(void)
 #endif
 
     track_point::init();
+    
+    track_point::callback_init(track_point::KEY_UP   , track_point::KEY_CLICK, move_text);
+    track_point::callback_init(track_point::KEY_DOWN , track_point::KEY_CLICK, move_text);
+    track_point::callback_init(track_point::KEY_LEFT , track_point::KEY_CLICK, move_text);
+    track_point::callback_init(track_point::KEY_RIGHT, track_point::KEY_CLICK, move_text);
+
+    track_point::callback_init(track_point::KEY_UP   , track_point::KEY_LONG_PRESS, move_text);
+    track_point::callback_init(track_point::KEY_DOWN , track_point::KEY_LONG_PRESS, move_text);
+    track_point::callback_init(track_point::KEY_LEFT , track_point::KEY_LONG_PRESS, move_text);
+    track_point::callback_init(track_point::KEY_RIGHT, track_point::KEY_LONG_PRESS, move_text);
+    
+    track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DOUBLE_CLICK, color_select);
+    track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DBL_LONG_PRESS, color_select);
+
     ili9341::init();
 
-    static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
-    term.set_brush({font::CYAN, font::BLACK});
+    term.set_brush(brush);
+    term.clear();
     term.print(demo_str);
 
-    term.scroll(3, 0, true);
-    term.print("Test string after scroll. ");
-    term.scroll(-2, 0, true);
-    
 for(;;){};
     
     // Тест флешки // see http://we.easyelectronics.ru/aliaksei/stm32f103-i-fatfs-nachinayuschim.html
