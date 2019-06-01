@@ -6,6 +6,6 @@
 namespace font
 {
 
-extern cpp_font atari;
+extern const font_t atari;
 
 };

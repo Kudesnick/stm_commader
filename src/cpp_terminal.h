@@ -8,31 +8,76 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          font.c
+ *   File:          terminal.h
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       21.04.2019 - file created
+ *   History:       06.05.2019 - file created
  *
  **************************************************************************************************/
+
+#pragma once
 
 /***************************************************************************************************
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include "cpp_font.h"
-#include "bsp_ili9341.h"
+#include <stdint.h>
+#include <string.h>
 
+#include "cpp_font.h"
+#include "courier_new.h"
+#include "fnt8x8.h"
+#include "fnt8x16.h"
+#include "atari.h"
+#include "zx.h"
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
 
-#define DEF_CL_TEXT WHITE
-#define DEF_CL_BG   BLACK
-
 /***************************************************************************************************
  *                                      PUBLIC TYPES
  **************************************************************************************************/
+
+namespace terminal
+{
+
+typedef struct
+{
+    uint16_t x, y;
+} crd_t;
+
+class cpp_terminal : protected font::cpp_font
+{
+private:
+    const crd_t win_crd_;
+    const crd_t win_size_;
+    char * const p_buf_;
+    const uint16_t buf_size_;
+    uint16_t buf_ptr_;
+    uint16_t scroll_ptr_;
+    crd_t cursor_;
+    void rect_calc_of_str_(const uint8_t, ili9341::rect_t&);
+    void rect_calc_of_col_(const uint8_t, ili9341::rect_t&);
+//    add_to_buf_(const char * const, const uint16_t);
+
+public:
+    cpp_terminal(const uint16_t _x,
+                 const uint16_t _y,
+                 const uint8_t _height,
+                 const uint8_t _width,
+                 const font::font_t& _font,
+                 char * const _buffer = NULL,
+                 uint16_t _buf_size = 0
+                 );
+    void clear(void);
+    void print(const char * const _str);
+    void set_brush(const font::brush_t &_brush);
+    void set_cursor(const int16_t _x, const int16_t _y);
+    void scroll(const int16_t _x, const int16_t _y, bool _cycle = false);
+};
+
+}; // namespace terminal
 
 /***************************************************************************************************
  *                               PRIVATE FUNCTION PROTOTYPES
@@ -65,97 +110,6 @@
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
-
-namespace font
-{
-  
-ili9341::color_t color_converter(const font::color_t &_color)
-{
-    const uint16_t color[] =
-    {
-        //GGGRRRRRBBBBBGGG
-        0b0000000000000000, // BLACK_D  
-        0b0000000001111000, // BLUE_D   
-        0b0000111100000000, // RED_D    
-        0b0000111101111000, // MAGENTA_D
-        0b1110000000000011, // GREEN_D  
-        0b1110000001111011, // CYAN_D   
-        0b1110111100000011, // YELLO_D  
-        0b1110111101111011, // WHITE_D  
-        0b0000000000000000, // BLACK    
-        0b0000000011111000, // BLUE     
-        0b0001111100000000, // RED      
-        0b0001111111111000, // MAGENTA  
-        0b1110000000000111, // GREEN    
-        0b1110000011111111, // CYAN     
-        0b1111111100000111, // YELLO    
-        0b1111111111111111, // WHITE    
-    };
-    
-    return color[_color];
-};
-
-cpp_font::cpp_font(const font_t &_font):
-    font_(&_font),
-    brush_({DEF_CL_TEXT, DEF_CL_BG})
-{};
-
-void cpp_font::set_brush(const brush_t &_brush)
-{
-    brush_ = _brush;
-};
-
-uint8_t cpp_font::draw(const uint16_t _x, const uint16_t _y, const char * const _str, const uint8_t _len)
-{
-    uint8_t len = (strlen(_str) < _len) ? strlen(_str) : _len;
-
-    ili9341::rect_t rect = {_x, _y};
-    rect.x2 = _x + font_->attr.height_glyph - 1;
-    rect.y2 = _y + font_->attr.width_glyph * len - 1;
-    ili9341::set_rect(&rect);    
-    
-    ili9341::bmp_size_t max_pixel_cnt = ili9341::get_pixel_cnt(&rect);
-    ili9341::bmp_size_t curr_pixel = 0;
-
-    for(uint8_t i = 0; i < len; i++)
-    {
-        if (   _str[i] >= font_->attr.start_code 
-            && _str[i] <= font_->attr.end_code 
-            && _str[i] >= ' '
-            )
-        {    
-            const uint8_t * pixel_ptr = 
-                &(font_->p_font[(uint16_t)(_str[i] - font_->attr.start_code) * font_->attr.glyph_size]);
-            
-            const uint8_t symbol_height_inc = font_->attr.height_glyph / 8 +
-                (((font_->attr.height_glyph % 8) > 0) ? 1 : 0);
-            
-            
-            for (uint8_t j = font_->attr.width_glyph; j > 0; j--, pixel_ptr += symbol_height_inc)
-            {
-                uint32_t curr_byte = *(uint32_t *)pixel_ptr;
-                
-                for (uint8_t k = font_->attr.height_glyph; k > 0; k--, curr_byte >>= 1)
-                {
-                    ili9341::color_t tmp_color = 
-                        color_converter(((curr_byte & 1) ? brush_.txt : brush_.bg));
-                    
-                    ili9341::send_data((const uint8_t *)&tmp_color, sizeof(ili9341::color_t));
-                    
-                    if (++curr_pixel >= max_pixel_cnt) return i + 1;
-                }
-            }
-        }
-        else
-        {
-            return i;
-        }
-    }
-    
-    return len;
-};
-
-}; // namespace font
 
 /***************************************************************************************************
  *                                       END OF FILE

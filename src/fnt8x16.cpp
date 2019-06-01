@@ -6,6 +6,7 @@
 // Конвертация с помощью скрипта fconv.py (see ./utils/raster_fonts/)
 
 #include "cpp_font.h"
+#include "fnt8x16.h"
 
 const uint8_t data[] =
 {
@@ -267,7 +268,10 @@ const uint8_t data[] =
     0xC0, 0x08, 0xE0, 0x0D, 0x20, 0x0F, 0x20, 0x03, 0x20, 0x01, 0xE0, 0x0F, 0xE0, 0x0F, 0x20, 0x08, 
 };
 
-const font::font_t header =
+namespace font
+{
+
+    const font_t fnt8x16 =
 {
     .attr =
     {
@@ -280,7 +284,4 @@ const font::font_t header =
     .p_font = data,
 };
 
-namespace font
-{
-    cpp_font fnt8x16(header);
 };

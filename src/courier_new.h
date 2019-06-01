@@ -6,6 +6,6 @@
 namespace font
 {
 
-extern cpp_font courier_new;
+extern const font_t courier_new;
 
 };

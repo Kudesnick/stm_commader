@@ -6,6 +6,6 @@
 namespace font
 {
 
-extern cpp_font fnt8x8;
+extern const font_t fnt8x8;
 
 };

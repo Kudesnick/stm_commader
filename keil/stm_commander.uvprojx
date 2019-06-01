@@ -398,6 +398,11 @@
               <FilePath>..\src\cpp_font.cpp</FilePath>
             </File>
             <File>
+              <FileName>cpp_terminal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\cpp_terminal.cpp</FilePath>
+            </File>
+            <File>
               <FileName>main.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\main.cpp</FilePath>
@@ -852,6 +857,11 @@
               <FileName>cpp_font.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\cpp_font.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>cpp_terminal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\cpp_terminal.cpp</FilePath>
             </File>
             <File>
               <FileName>main.cpp</FileName>
