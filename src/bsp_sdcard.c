@@ -34,11 +34,11 @@ CS2           PB12
 #include "bsp_sdcard.h"
 #include "bsp_gpio.h"
 
-//extern "C"
-//{
-    #include "GPIO_STM32F10x.h"
-//}
-#include "SPI_MultiSlave.h"
+#include "GPIO_STM32F10x.h"
+#include "Driver_SPI.h"
+
+#include "..\keil\RTE\File_System\FS_Config_MC_0.h"
+#include "..\keil\RTE\File_System\FS_Config_MC_1.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
@@ -93,8 +93,8 @@ void SPI_Control_SlaveSelect (uint32_t device, uint32_t ss_state)
 {
     switch(device)
     {
-        case 20 /* MC0_SPI_DRIVER */: GPIO_PinWrite(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
-        case 21 /* MC1_SPI_DRIVER */: GPIO_PinWrite(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        case MC0_SPI_DRIVER: GPIO_PinWrite(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        case MC1_SPI_DRIVER: GPIO_PinWrite(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
         default: break;
     }
 }

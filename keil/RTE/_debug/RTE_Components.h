@@ -27,6 +27,9 @@
 #define RTE_DEVICE_STDPERIPH_GPIO
 #define RTE_DEVICE_STDPERIPH_RCC
 #define RTE_DEVICE_STDPERIPH_SPI
+#define RTE_Drivers_SPI1                /* Driver SPI1 */
+        #define RTE_Drivers_SPI2                /* Driver SPI2 */
+        #define RTE_Drivers_SPI3                /* Driver SPI3 */
 #define RTE_Drivers_SPI_MultiSlave      /* Driver SPI Multi-Slave */
 #define RTE_FileSystem_Core             /* File System Core */
           #define RTE_FileSystem_LFN              /* File System with Long Filename support */

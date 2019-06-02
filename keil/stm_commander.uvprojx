@@ -927,12 +927,26 @@
       <component Cbundle="MDK-Plus" Cclass="File System" Cgroup="Drive" Csub="Memory Card" Cvendor="Keil" Cversion="6.11.0" condition="File System and SD/MMC Driver" maxInstances="2">
         <package name="MDK-Middleware" schemaVersion="1.4" url="http://www.keil.com/pack/" vendor="Keil" version="7.8.0"/>
         <targetInfos>
-          <targetInfo instances="2" name="debug"/>
-          <targetInfo instances="2" name="release"/>
+          <targetInfo instances="2" name="debug" versionMatchMode=""/>
+          <targetInfo instances="2" name="release" versionMatchMode=""/>
+        </targetInfos>
+      </component>
+      <component Capiversion="2.1" Cclass="CMSIS Driver" Cgroup="SPI" Cvendor="Keil" Cversion="2.2" condition="STM32F1xx CMSIS GPIO DMA">
+        <package name="STM32F1xx_DFP" schemaVersion="1.4.0" url="http://www.keil.com/pack/" vendor="Keil" version="2.3.0"/>
+        <targetInfos>
+          <targetInfo name="debug"/>
+          <targetInfo name="release"/>
         </targetInfos>
       </component>
       <component Capiversion="2.2.0" Cclass="CMSIS Driver" Cgroup="SPI" Csub="Multi-Slave" Cvendor="Keil" Cversion="1.0.1" condition="CMSIS Core with RTOS2 and SPI Driver">
         <package name="CMSIS-Driver" schemaVersion="1.4.0" url="http://www.keil.com/pack/" vendor="ARM" version="2.4.0"/>
+        <targetInfos>
+          <targetInfo name="debug"/>
+          <targetInfo name="release"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Device" Cgroup="DMA" Cvendor="Keil" Cversion="1.2" condition="STM32F1xx CMSIS">
+        <package name="STM32F1xx_DFP" schemaVersion="1.4.0" url="http://www.keil.com/pack/" vendor="Keil" version="2.3.0"/>
         <targetInfos>
           <targetInfo name="debug"/>
           <targetInfo name="release"/>
