@@ -1,0 +1,4 @@
+load STM32L476RGTx 
+project name STCubeGenerated 
+project toolchain "MDK-ARM V5" 
+project path "D:\git\st\stm_commander\keil\RTE\Device\STM32L476RGTx\" 

@@ -28,7 +28,10 @@
 #include "cpp_os.h"
 #include "misc_macro.h"
 
+extern "C"
+{
 #include "Board_LED.h"
+}
 
 /***************************************************************************************************
  *                                       DEFINITIONS
