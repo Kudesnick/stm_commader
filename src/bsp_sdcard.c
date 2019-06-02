@@ -8,53 +8,48 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          bsp_ili9341.h
+ *   File:          bsp_sdcard.c
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       21.04.2019 - file created
+ *   History:       02.06.2019 - file created
  *
  **************************************************************************************************/
 
-#pragma once
+/*
+Nucleo-64 pinout
+
+Card holder | STM (SPI_2)
+SCK           PB13
+MISO          PB14
+MOSI          PB15
+CS1           PB11
+CS2           PB12
+*/
 
 /***************************************************************************************************
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include <stdint.h>
-#include <stdio.h>
+#include "bsp_sdcard.h"
+#include "bsp_gpio.h"
+
+//extern "C"
+//{
+    #include "GPIO_STM32F10x.h"
+//}
+#include "SPI_MultiSlave.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
 
+#define PIN_CS20 PORTB_11
+#define PIN_CS21 PORTB_12
+
 /***************************************************************************************************
  *                                      PUBLIC TYPES
  **************************************************************************************************/
-
-namespace ili9341
-{
-
-typedef struct
-{
-    uint16_t x1, y1, x2, y2;
-} rect_t;
-
-typedef uint32_t bmp_size_t;
-typedef uint16_t color_t;
-
-typedef enum : uint8_t
-{
-    ROT_0,
-    ROT_1,
-    ROT_2,
-    ROT_3,
-    ROT_4,
-    ROT_5,
-    ROT_6,
-    ROT_7,
-} rot_t;
 
 /***************************************************************************************************
  *                               PRIVATE FUNCTION PROTOTYPES
@@ -72,16 +67,6 @@ typedef enum : uint8_t
  *                              PUBLIC FUNCTION PROTOTYPES
  **************************************************************************************************/
 
-bmp_size_t get_pixel_cnt(const rect_t * _rect);
-void send_data(const uint8_t * _data, const bmp_size_t _size);
-void get_data(uint8_t * _data, const bmp_size_t _size);
-void send_cmd(const uint8_t * _data);
-void set_rect(const rect_t * _rect, const bool _to_read = false);
-void fill_rect(const rect_t * const _rect, const color_t _color);
-void draw_bmp(const rect_t * _rect, const color_t * _bmp);
-void init(void);
-void scroll(const uint16_t);
-
 /***************************************************************************************************
  *                                      EXTERNAL DATA
  **************************************************************************************************/
@@ -98,7 +83,21 @@ void scroll(const uint16_t);
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-}; // namespace ili9341
+void bsp_sdcard_init(void)
+{
+    
+}
+
+//-- see. SPI_MultiSlave.h
+void SPI_Control_SlaveSelect (uint32_t device, uint32_t ss_state)
+{
+    switch(device)
+    {
+        case 20 /* MC0_SPI_DRIVER */: GPIO_PinWrite(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        case 21 /* MC1_SPI_DRIVER */: GPIO_PinWrite(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        default: break;
+    }
+}
 
 /***************************************************************************************************
  *                                       END OF FILE

@@ -42,7 +42,7 @@ using namespace track_point;
 
 #define KEY_UP_PIN      PORTA_11
 #define KEY_DOWN_PIN    PORTB_01
-#define KEY_LEFT_PIN    PORTB_11
+#define KEY_LEFT_PIN    PORTA_06
 #define KEY_RIGHT_PIN   PORTB_02
 #define KEY_CENTER_PIN  PORTA_12
 
@@ -164,10 +164,11 @@ static void _keyscan(void)
     }
 };
 
-extern "C" void SysTick_Handler(void)
-{
-    _keyscan();
-};
+#warning mus be implemented in OS
+// extern "C" void SysTick_Handler(void)
+// {
+//     _keyscan();
+// };
 
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
