@@ -1,6 +1,6 @@
 /***************************************************************************************************
- *   Project:     
- *   Author:        Stulov Tikhon (kudesnick@inbox.ru)
+ *   Project:       
+ *   Author:        
  ***************************************************************************************************
  *   Distribution:  
  *
@@ -8,47 +8,34 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          bsp_sdcard.c
+ *   File:          cpp_os.cpp
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       02.06.2019 - file created
+ *   History:       27.05.2019 - file created
  *
  **************************************************************************************************/
-
-/*
-Nucleo-64 pinout
-
-Card holder | STM (SPI_2)
-SCK           PB13
-MISO          PB14
-MOSI          PB15
-CS1           PB11
-CS2           PB12
-*/
 
 /***************************************************************************************************
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include "bsp_sdcard.h"
-#include "bsp_gpio.h"
+#include <stdlib.h>
+#include <stdint.h>
+#include "cpp_list.h"
+#include "cpp_os.h"
+#include "misc_macro.h"
 
-#include "GPIO_STM32F10x.h"
-#include "Driver_SPI.h"
-
-#include "..\keil\RTE\File_System\FS_Config_MC_0.h"
-#include "..\keil\RTE\File_System\FS_Config_MC_1.h"
+#ifdef __cplusplus
+    using namespace std;
+#endif
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
 
-#define PIN_CS20 PORTB_11
-#define PIN_CS21 PORTB_12
-
 /***************************************************************************************************
- *                                      PUBLIC TYPES
+ *                                      PRIVATE TYPES
  **************************************************************************************************/
 
 /***************************************************************************************************
@@ -64,10 +51,6 @@ CS2           PB12
  **************************************************************************************************/
 
 /***************************************************************************************************
- *                              PUBLIC FUNCTION PROTOTYPES
- **************************************************************************************************/
-
-/***************************************************************************************************
  *                                      EXTERNAL DATA
  **************************************************************************************************/
 
@@ -79,25 +62,52 @@ CS2           PB12
  *                                    PRIVATE FUNCTIONS
  **************************************************************************************************/
 
+//-- os_elements
+
+void cpp_os::all_elements_create(void)
+{
+    enumerate([](cpp_os *& _el_os)
+    {
+        _el_os->create();
+        
+        return true;
+    });
+};
+
+osStatus_t cpp_os::os_chck(osStatus_t _status)
+{
+    if (_status != osOK)
+    {
+        BRK_PTR();
+    };
+    
+    return _status;
+};
+
+void * cpp_os::os_chck(void * _ptr)
+{
+    if (_ptr == NULL)
+    {
+        BRK_PTR();
+    };
+    
+    return _ptr;
+};
+
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-void bsp_sdcard_init(void)
-{
-    
-}
+//-- os_elements
 
-//-- see. SPI_MultiSlave.h
-void SPI_Control_SlaveSelect (uint32_t device, uint32_t ss_state)
+void cpp_os::create_os(void)
 {
-    switch(device)
-    {
-        case MC0_SPI_DRIVER: GPIO_PinWrite(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
-        case MC1_SPI_DRIVER: GPIO_PinWrite(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
-        default: break;
-    }
-}
+    os_chck(osKernelInitialize()); // initialize RTX
+
+    all_elements_create();
+
+    os_chck(osKernelStart()); // start RTX kernel
+};
 
 /***************************************************************************************************
  *                                       END OF FILE

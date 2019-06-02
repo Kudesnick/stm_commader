@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'stm_commander' 
- * Target:  'debug' 
+ * Target:  'nucleo-f103RB' 
  */
 
 #ifndef RTE_COMPONENTS_H

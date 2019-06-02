@@ -42,14 +42,6 @@ CS          A3          PB0
 #include "bsp_ili9341.h"
 #include "bsp_gpio.h"
 
-#include "RTE_Components.h"
-#include CMSIS_device_header
-
-extern "C"
-{
-#include "GPIO_STM32F10x.h"
-};
-
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/

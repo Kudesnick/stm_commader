@@ -22,20 +22,17 @@
 
 #include "bsp_track_point.h"
 #include "bsp_ili9341.h"
-#include "bsp_gpio.h"
 #include "cpp_terminal.h"
 #include "cpp_font.h"
 
-extern "C"
-{
-    #include "GPIO_STM32F10x.h"
-}
+#include "cpp_os.h"
+#include "misc_macro.h"
+
+#include "Board_LED.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
-
-#define LED2 GPIOA, 0x5
 
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
@@ -130,12 +127,19 @@ static void move_text(const track_point::key_t _key, const track_point::key_even
 
 int main(void)
 {
-#if (0)
+#if (1)
     // Проверка того, что проект запустился (мигаем светодиодом на борде)
-    GPIO_PinConfigure(LED2, GPIO_OUT_PUSH_PULL, GPIO_MODE_OUT2MHZ);
+    LED_Initialize();
     for (uint8_t i = 1; i <= 6; i++)
     {
-        GPIO_PinWrite(LED2, i & 1);
+        if (i & 1)
+        {
+            LED_On(0);
+        }
+        else
+        {
+            LED_Off(0);
+        }
         for (volatile uint32_t i = 0; i < 0xFFFFF; i++){};
     }
 #endif
@@ -163,7 +167,9 @@ int main(void)
     track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DOUBLE_CLICK, color_select);
     track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DBL_LONG_PRESS, color_select);
 
-
+    cpp_os::create_os();
+    
+    BRK_PTR();
 
     for(;;){};
 
