@@ -22,14 +22,13 @@
 
 #include "bsp_track_point.h"
 #include "bsp_ili9341.h"
-#include "ff.h"
 #include "bsp_gpio.h"
 #include "cpp_terminal.h"
 #include "cpp_font.h"
 
 extern "C"
 {
-#include "GPIO_STM32F10x.h"
+    #include "GPIO_STM32F10x.h"
 }
 
 /***************************************************************************************************
@@ -141,6 +140,14 @@ int main(void)
     }
 #endif
 
+    //-- display demo
+    ili9341::init();
+
+    term.set_brush(brush);
+    term.clear();
+    term.print(demo_str);
+
+    //-- track point demo
     track_point::init();
     
     track_point::callback_init(track_point::KEY_UP   , track_point::KEY_CLICK, move_text);
@@ -156,72 +163,9 @@ int main(void)
     track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DOUBLE_CLICK, color_select);
     track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DBL_LONG_PRESS, color_select);
 
-    ili9341::init();
 
-    term.set_brush(brush);
-    term.clear();
-    term.print(demo_str);
 
-for(;;){};
-    
-    // Тест флешки // see http://we.easyelectronics.ru/aliaksei/stm32f103-i-fatfs-nachinayuschim.html
-    static char buff[1024];             // буфер для чтения/записи
-
-    FRESULT result;
-
-    // смонтировать диск
-    FATFS FATFS_Obj;
-
-    result = f_mount(&FATFS_Obj, "0", 1);
-    if (result != FR_OK)
-    {
-            //printf("Ошибка монтирования диска %d\r\n", result);
-    }
-    else
-    {
-        // считаем файлы в корневом каталоге
-        DIR dir;
-        FILINFO fileInfo;
-        int nFiles = 0;
-    
-        result = f_opendir(&dir, "/");
-        if (result == FR_OK)
-        {
-                while (((result = f_readdir(&dir, &fileInfo)) == FR_OK) && fileInfo.fname[0])
-                {
-                        nFiles++;
-                }
-        }
-        f_closedir(&dir);
-    
-    
-        // открываем файл readme.txt для чтения
-        FIL file;
-        UINT nRead, nWritten;
-    
-        result = f_open(&file, "readme.txt", FA_OPEN_EXISTING | FA_READ);
-        if (result == FR_OK)
-        {
-                f_read(&file, &buff, 1024, &nRead);
-                f_close(&file);
-        }
-    
-        // создаем файл write.txt
-        result = f_open(&file, "write.txt", FA_CREATE_ALWAYS | FA_WRITE);
-        if (result == FR_OK)
-        {
-                f_write(&file, &buff, nRead, &nWritten);
-                f_close(&file);
-
-//                font::courier_new.draw(16, 8, '+');
-        }
-        else
-        {
-//            font::courier_new.draw(16, 8, '-');
-        }
-    }
-    
-    for(;;);
+    for(;;){};
 
 }
 

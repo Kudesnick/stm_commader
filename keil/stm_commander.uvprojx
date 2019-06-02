@@ -440,26 +440,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>fatfs</GroupName>
-          <Files>
-            <File>
-              <FileName>ff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\fatfs\source\ff.c</FilePath>
-            </File>
-            <File>
-              <FileName>ffsystem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\fatfs\source\ffsystem.c</FilePath>
-            </File>
-            <File>
-              <FileName>fatfs_diskio_sdcard_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\fatfs\source\fatfs_diskio_sdcard_spi.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
         <Group>
@@ -897,26 +877,6 @@
               <FileName>zx.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\zx.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>fatfs</GroupName>
-          <Files>
-            <File>
-              <FileName>ff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\fatfs\source\ff.c</FilePath>
-            </File>
-            <File>
-              <FileName>ffsystem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\fatfs\source\ffsystem.c</FilePath>
-            </File>
-            <File>
-              <FileName>fatfs_diskio_sdcard_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\fatfs\source\fatfs_diskio_sdcard_spi.c</FilePath>
             </File>
           </Files>
         </Group>
