@@ -63,8 +63,6 @@ CS          A3          PB0
 #define LCD_PIN_WR PORTA_01
 #define LCD_PIN_CS PORTB_00
 
-#define LCD_PIN_SPEED GPIO_MODE_OUT10MHZ
-
 #define LCD_CMD_WR           (1 <<  9)
 #define LCD_DATA_WR (1 << 8 | 1 <<  9)
 #define LCD_DATA_RD (1 << 8 | 1 << 10)
@@ -158,7 +156,7 @@ const struct
     {LCD_PIN_CS},
 };
 
-GPIO_MODE data_mode;
+bool data_port_is_out = true;
 
 uint8_t rot_mode;
 
@@ -191,54 +189,54 @@ static void _delay(volatile uint16_t _tm)
 void _hw_init(void)
 {
     for (uint8_t i = 0; i < countof(pins); i++)
-        GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_OUT_PUSH_PULL, LCD_PIN_SPEED);
+        GPIO_OUT_CONFIG(pins[i].port, pins[i].pin);
     
-    GPIO_PinWrite(LCD_PIN_CS, 1);
-    GPIO_PinWrite(LCD_PIN_RD, 1);
-    GPIO_PinWrite(LCD_PIN_WR, 1);
-    GPIO_PinWrite(LCD_PIN_RS, 0);
-    GPIO_PinWrite(LCD_PIN_CS, 0);
+    GPIO_WRITE_PIN(LCD_PIN_CS, 1);
+    GPIO_WRITE_PIN(LCD_PIN_RD, 1);
+    GPIO_WRITE_PIN(LCD_PIN_WR, 1);
+    GPIO_WRITE_PIN(LCD_PIN_RS, 0);
+    GPIO_WRITE_PIN(LCD_PIN_CS, 0);
 }
 
 static void _set(uint16_t _data)
 {
-    if (data_mode != LCD_PIN_SPEED)
+    if (!data_port_is_out)
     {
         for (uint8_t i = 0; i < 8; i++)
-            GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_OUT_PUSH_PULL, LCD_PIN_SPEED);
+            GPIO_OUT_CONFIG(pins[i].port, pins[i].pin);
         
-        data_mode = LCD_PIN_SPEED;
+        data_port_is_out = true;
     }
     
     for (uint8_t i = 0; i < countof(pins); i++, _data >>= 1)
     {
-        GPIO_PinWrite(pins[i].port, pins[i].pin, _data & 1);
+        GPIO_WRITE(pins[i].port, pins[i].pin, _data & 1);
     }
         
-    GPIO_PinWrite(LCD_PIN_WR, 1);
+    GPIO_WRITE_PIN(LCD_PIN_WR, 1);
 }
 
 static uint8_t _get(void)
 {
     uint8_t result = 0;
     
-    GPIO_PinWrite(LCD_PIN_RS, 1);
-    GPIO_PinWrite(LCD_PIN_RD, 0);
+    GPIO_WRITE_PIN(LCD_PIN_RS, 1);
+    GPIO_WRITE_PIN(LCD_PIN_RD, 0);
     
-    if (data_mode != GPIO_MODE_INPUT)
+    if (data_port_is_out)
     {
         for (auto i = 0; i < 8; i++)
-            GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_FLOATING, GPIO_MODE_INPUT);
+            GPIO_IN_FLT_CONFIG(pins[i].port, pins[i].pin);
         
-        data_mode = GPIO_MODE_INPUT;
+        data_port_is_out = false;
     }
 
-    GPIO_PinWrite(LCD_PIN_RD, 1);
+    GPIO_WRITE_PIN(LCD_PIN_RD, 1);
         
     for (auto i = 0; i < 8; i++)
     {
         result <<= 1;
-        result |= GPIO_PinRead(pins[i].port, pins[i].pin);
+        result |= GPIO_READ(pins[i].port, pins[i].pin);
     }
     
     return result;
@@ -304,7 +302,7 @@ void send_data(const uint8_t * _data, const bmp_size_t _size)
 
 void get_data(uint8_t * _data, const bmp_size_t _size)
 {
-    if (data_mode != GPIO_MODE_INPUT)
+    if (data_port_is_out)
     {
         _get();
     }

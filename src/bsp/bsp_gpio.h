@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "RTE_Components.h"
 #include CMSIS_device_header
 
@@ -30,13 +32,69 @@
     #ifdef  __cplusplus
     };
     #endif
-#else
-    #include "stm32l4xx_ll_gpio.h"
+#else 
+    #include "stm32l4xx_hal.h"
 #endif
 
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
+
+#ifdef HAL_MODULE_ENABLED
+
+#define GPIO_OUT_CONFIG(port, pin)                  \
+    {                                               \
+        GPIO_InitTypeDef GPIO_Init;                 \
+                                                    \
+        GPIO_Init.Pin  = 1 << pin;                  \
+        GPIO_Init.Mode  = GPIO_MODE_OUTPUT_PP;      \
+        GPIO_Init.Speed = GPIO_SPEED_FREQ_MEDIUM;   \
+                                                    \
+        HAL_GPIO_Init(port, &GPIO_Init);            \
+    }
+
+#define GPIO_IN_FLT_CONFIG(port, pin)       \
+    {                                       \
+        GPIO_InitTypeDef GPIO_Init;         \
+                                            \
+        GPIO_Init.Pin   = 1 << pin;         \
+        GPIO_Init.Mode  = GPIO_MODE_INPUT;  \
+        GPIO_Init.Pull = GPIO_NOPULL;       \
+                                            \
+        HAL_GPIO_Init(port, &GPIO_Init);    \
+    }
+    
+#define GPIO_IN_PUP_CONFIG(port, pin)       \
+    {                                       \
+        GPIO_InitTypeDef GPIO_Init;         \
+                                            \
+        GPIO_Init.Pin   = 1 << pin;         \
+        GPIO_Init.Mode  = GPIO_MODE_INPUT;  \
+        GPIO_Init.Pull  = GPIO_PULLUP;      \
+                                            \
+        HAL_GPIO_Init(port, &GPIO_Init);    \
+    }
+
+#define GPIO_WRITE(port, pin, val)    HAL_GPIO_WritePin(port, pin, static_cast<GPIO_PinState>(val))
+#define GPIO_WRITE_PIN(port_pin, val) HAL_GPIO_WritePin(port_pin, static_cast<GPIO_PinState>(val))
+#define GPIO_READ(port, pin)          HAL_GPIO_ReadPin(port, pin)
+#define GPIO_READ_PIN(port_pin)       HAL_GPIO_ReadPin(port_pin)
+
+
+#define GPIO_PinWrite HAL_GPIO_WritePin
+#define GPIO_PinRead  HAL_GPIO_ReadPin
+
+#else
+
+#define GPIO_OUT_CONFIG(port, pin)    GPIO_PinConfigure(port, pin, GPIO_OUT_PUSH_PULL, GPIO_MODE_OUT10MHZ)
+#define GPIO_IN_FLT_CONFIG(port, pin) GPIO_PinConfigure(port, pin, GPIO_IN_PULL_UP, GPIO_MODE_INPUT)
+#define GPIO_IN_PUP_CONFIG(port, pin) GPIO_PinConfigure(port, pin, GPIO_IN_FLOATING, GPIO_MODE_INPUT)
+#define GPIO_WRITE(port, pin, val)    GPIO_PinWrite(port, pin, val)
+#define GPIO_WRITE_PIN(port_pin, val) GPIO_PinWrite(port_pin, val)
+#define GPIO_READ(port, pin)          GPIO_PinRead(port, pin)
+#define GPIO_READ_PIN(port_pin)       GPIO_PinRead(port_pin)
+
+#endif
 
 #define PORTA_00 GPIOA, 0x0
 #define PORTA_01 GPIOA, 0x1

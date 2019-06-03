@@ -102,7 +102,7 @@ static void _keyscan(void)
     
     for (uint8_t i = 0; i < KEY_CNT; i++)
     {
-        key_event_t curr = GPIO_PinRead(pins[i].port, pins[i].pin) ? KEY_POP : KEY_PUSH;
+        key_event_t curr = GPIO_READ(pins[i].port, pins[i].pin) ? KEY_POP : KEY_PUSH;
         
         if (keys[i].prev_status != curr)
         {
@@ -173,7 +173,7 @@ void init(void)
 {
     for (uint8_t i = 0; i < KEY_CNT; i++)
     {
-        GPIO_PinConfigure(pins[i].port, pins[i].pin, GPIO_IN_PULL_UP, GPIO_MODE_INPUT);
+        GPIO_IN_PUP_CONFIG(pins[i].port, pins[i].pin);
     }
 
     RCC_ClocksTypeDef RCC_Clocks;

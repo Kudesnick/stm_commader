@@ -95,8 +95,8 @@ void SPI_Control_SlaveSelect (uint32_t device, uint32_t ss_state)
 {
     switch(device)
     {
-        case MC0_SPI_DRIVER: GPIO_PinWrite(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
-        case MC1_SPI_DRIVER: GPIO_PinWrite(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        case MC0_SPI_DRIVER: GPIO_WRITE_PIN(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        case MC1_SPI_DRIVER: GPIO_WRITE_PIN(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
         default: break;
     }
 }
