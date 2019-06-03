@@ -461,9 +461,9 @@
               <FilePath>..\src\cpp_terminal.cpp</FilePath>
             </File>
             <File>
-              <FileName>main.cpp</FileName>
+              <FileName>user_main.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\src\main.cpp</FilePath>
+              <FilePath>..\src\user_main.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -1064,9 +1064,9 @@
               <FilePath>..\src\cpp_terminal.cpp</FilePath>
             </File>
             <File>
-              <FileName>main.cpp</FileName>
+              <FileName>user_main.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\src\main.cpp</FilePath>
+              <FilePath>..\src\user_main.cpp</FilePath>
             </File>
           </Files>
         </Group>

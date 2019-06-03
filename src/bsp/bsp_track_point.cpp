@@ -176,10 +176,12 @@ void init(void)
         GPIO_IN_PUP_CONFIG(pins[i].port, pins[i].pin);
     }
 
-    RCC_ClocksTypeDef RCC_Clocks;
+#warning mus be implemented in OS
+//    RCC_ClocksTypeDef RCC_Clocks;
+//
+//    RCC_GetClocksFreq(&RCC_Clocks);
+//    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000 * TIME_SCAN);
 
-    RCC_GetClocksFreq(&RCC_Clocks);
-    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000 * TIME_SCAN);
 };
 
 void callback_init(key_t _key_num, key_event_t _event, fn_event_t _func)
