@@ -29,11 +29,6 @@
 #define RTE_DEVICE_HAL_PWR
 #define RTE_DEVICE_HAL_RCC
 #define RTE_DEVICE_HAL_SPI
-#define RTE_DEVICE_LL_COMMON
-#define RTE_DEVICE_LL_GPIO
-#define RTE_DEVICE_LL_PWR
-#define RTE_DEVICE_LL_RCC
-#define RTE_DEVICE_LL_UTILS
 #define RTE_DEVICE_STARTUP_STM32L4XX    /* Device Startup for STM32L4 */
 #define RTE_Drivers_SPI1                /* Driver SPI1 */
         #define RTE_Drivers_SPI2                /* Driver SPI2 */

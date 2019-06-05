@@ -128,9 +128,9 @@ static void _move_text(const track_point::key_t _key, const track_point::key_eve
     term.scroll(x, y, cycle);
 };
 
-int user_main(void)
+int main(void)
 {
-#if (1)
+#if (0)
     // Проверка того, что проект запустился (мигаем светодиодом на борде)
     LED_Initialize();
     for (uint8_t i = 1; i <= 6; i++)
