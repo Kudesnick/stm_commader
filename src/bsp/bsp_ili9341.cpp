@@ -139,7 +139,7 @@ CS          A3          PB0
 const struct
 {
     GPIO_TypeDef * port;
-    uint8_t        pin;
+    uint16_t       pin;
 } pins[] =
 {
     {LCD_PIN_D0},
@@ -183,7 +183,7 @@ uint8_t rot_mode;
 static void _delay(volatile uint16_t _tm)
 {
     for (; _tm > 0; _tm--)
-        for (volatile uint32_t ct = 0xFFF; ct > 0; ct--);
+        for (volatile uint32_t ct = 0xFF; ct > 0; ct--);
 }
 
 void _hw_init(void)

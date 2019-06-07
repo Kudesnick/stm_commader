@@ -20,6 +20,7 @@
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
+#include "bsp_gpio.h"
 #include "bsp_track_point.h"
 #include "bsp_ili9341.h"
 #include "cpp_terminal.h"
@@ -128,9 +129,16 @@ static void _move_text(const track_point::key_t _key, const track_point::key_eve
     term.scroll(x, y, cycle);
 };
 
-int main(void)
+#ifdef HAL_MODULE_ENABLED
+extern "C"
 {
-#if (0)
+int cpp_main(void)
+#else
+int main(void)
+#endif
+{
+
+#if (1)
     // Проверка того, что проект запустился (мигаем светодиодом на борде)
     LED_Initialize();
     for (uint8_t i = 1; i <= 6; i++)
@@ -146,7 +154,7 @@ int main(void)
         for (volatile uint32_t i = 0; i < 0xFFFFF; i++){};
     }
 #endif
-
+    
     //-- display demo
     ili9341::init();
 
@@ -177,6 +185,10 @@ int main(void)
     for(;;){};
 
 }
+
+#ifdef HAL_MODULE_ENABLED
+} // extern "C"
+#endif
 
 /***************************************************************************************************
  *                                       END OF FILE
