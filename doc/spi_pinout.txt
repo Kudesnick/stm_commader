@@ -1,0 +1,25 @@
+
+LCD Shield | Arduino | Nucleo
+D0           D8        PA9
+D1           D9        PC7
+D2           D10       PA6
+D3           D11       PA7
+D4           D4        PB5
+D5           D13       PA5
+D6           D6        PB10
+D7           D7        PA8
+RS           A2        PA4
+RD           A0        PA0
+WR           A1        PA1
+CS           A3        PB0
+
+Interface | stm32f103 | stm32l476
+spi1 SCK    PA5(PB3)    PA5(PB3)
+     MISO   PA6(PB4)    PA6(PB4)
+     MOSI   PA7(PB5)    PA7(PB5)
+spi2 SCK    PB13        PB10(PB13)
+     MISO   PB14        PC2 (PB14)
+     MOSI   PB15        PC3 (PB15)
+spi3 SCK    -NA-        PC10(PB3)
+     MISO   -NA-        PC11(PB4)
+     MOSI   -NA-        PC12(PB5)
