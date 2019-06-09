@@ -2,7 +2,7 @@
 LCD Shield | Arduino | Nucleo
 D0           D8        PA9
 D1           D9        PC7
-D2           D10       PA6
+D2           D10       PB6
 D3           D11       PA7
 D4           D4        PB5
 D5           D13       PA5
