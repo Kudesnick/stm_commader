@@ -24,6 +24,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+// see https://www.keil.com/pack/doc/STM32Cube/General/html/cubemx__r_t_x.html
+#include "cmsis_os2.h"                  // ARM::CMSIS:RTOS:Keil RTX
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,6 +62,12 @@ static void MX_SPI2_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// see https://www.keil.com/pack/doc/STM32Cube/General/html/cubemx__r_t_x.html
+// adapted for RTOS v2 API
+uint32_t HAL_GetTick(void) {           // Add HAL_GetTick function for STM32Cube HAL
+  return osKernelGetTickCount(); 
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -68,7 +77,9 @@ static void MX_SPI2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+    
+  osKernelInitialize();               // Initialize RTOS Kernel for setup
+  
   /* USER CODE END 1 */
   
 
@@ -94,7 +105,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   extern int cpp_main(void);
-  
   cpp_main();
 
   /* USER CODE END 2 */
