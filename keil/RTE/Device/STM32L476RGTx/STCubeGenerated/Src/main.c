@@ -27,10 +27,6 @@
 // see https://www.keil.com/pack/doc/STM32Cube/General/html/cubemx__r_t_x.html
 #include "cmsis_os2.h"                  // ARM::CMSIS:RTOS:Keil RTX
 
-#include "RTE_Components.h"
-#include CMSIS_device_header
-#include "misc_macro.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -81,7 +77,8 @@ uint32_t HAL_GetTick(void) {           // Add HAL_GetTick function for STM32Cube
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-    
+  
+  // see https://www.keil.com/pack/doc/STM32Cube/General/html/cubemx__r_t_x.html
   osKernelInitialize();               // Initialize RTOS Kernel for setup
   
   /* USER CODE END 1 */
@@ -280,9 +277,6 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-
-  BRK_PTR();
-    
   /* USER CODE END Error_Handler_Debug */
 }
 
