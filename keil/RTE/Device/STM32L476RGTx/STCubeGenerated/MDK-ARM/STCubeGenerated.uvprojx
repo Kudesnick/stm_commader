@@ -360,7 +360,7 @@
               <MiscControls/>
               <Define>USE_HAL_DRIVER,STM32L476xx,USE_HAL_DRIVER,STM32L476xx</Define>
               <Undefine/>
-              <IncludePath>../Inc;        C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Inc;        C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;        C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/CMSIS/Device/ST/STM32L4xx/Include;        C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Inc;           C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Inc;           C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy;           C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/CMSIS/Device/ST/STM32L4xx/Include;           C:/Users/kudes/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
