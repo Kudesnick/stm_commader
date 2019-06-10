@@ -9,7 +9,9 @@
  *   Compiler:      ARMCC
  ***************************************************************************************************
  *   File:          cpp_os.h
- *   Description:   
+ *   Description:   Объектная обертка над примитивами операционной системы. Классы обеспечивают
+ *                  статическое выделение памяти под нужды элементов ОС (стеки, очереди и пр.) и
+ *                  предоставляют объектный интерфейс для управления элементами. 
  *
  ***************************************************************************************************
  *   History:       27.05.2019 - file created
@@ -51,21 +53,28 @@
 
 //-- os_elements
 
+// Абстрактный класс, реализующий общие функции примитивов ОС и обертки над глобальными функциями ОС
 class cpp_os : public cpp_list<cpp_os>
 {
 private:
+    // Произвести инициализацию всех примитивов ОС
     static void all_elements_create(void);
 
 protected:
+    // Проверить возвращаемое значение (используется для отладки)
     static osStatus_t os_chck(osStatus_t);
     static void * os_chck(void *);
     
 public:
     using cpp_list::cpp_list;
 
+    // Инициализация примитива ОС
     virtual void * create(void) = 0;
 
+    // Первичная инициализация ОС
     static void create_os(void);
+
+    // for other functions see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/index.html
 
     static osStatus_t delay(const uint32_t _ticks)
     {
@@ -90,6 +99,11 @@ public:
 
 //-- thread
 
+// Абстрактный класс потока
+/* Параметризация шаблона:
+ * - T_stack_size - размер стека
+ * - T_create_now - если true - инициализация и запуск потока выполняется на этапе инициализации ОС
+ */
 template<uint32_t T_stack_size = OS_STACK_SIZE, bool T_create_now = true> class cpp_os_thread : public cpp_os
 {
 private:
@@ -103,15 +117,18 @@ private:
         static_cast<cpp_os_thread<T_stack_size, T_create_now> *>(argument)->thread_func();
     };
     
+    // Виртуальная функция тела потока. Должна быть реализована в дочернем классе.
     virtual void thread_func() = 0;
 
 protected:
     
+    // see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__ThreadMgmt.html#gad01c7ec26535b1de6b018bb9466720e2
     osStatus_t yeld(void)
     {        
         return osThreadYield();
     };
     
+    // see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__ThreadMgmt.html#gaddaa452dd7610e4096647a566d3556fc
     void exit(void)
     {
         osThreadExit();
@@ -120,6 +137,7 @@ protected:
 public:
     using cpp_os::cpp_os;
 
+    // Инициализация и запуск потока
     osThreadId_t create(void)
     {
         const osThreadAttr_t attr =
@@ -139,6 +157,8 @@ public:
         
         return id_;
     };
+    
+    // for other functions see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__ThreadMgmt.html
     
     osThreadState_t get_state(void)
     {
@@ -183,6 +203,11 @@ public:
 
 //-- queue
 
+// Абстрактный класс очереди
+/* Параметризация шаблона:
+ * - T_queue_elment_t - тип элемента очереди
+ * - T_queue_count - количество элементов в очереди
+ */
 template<typename T_queue_elment_t, uint32_t T_queue_count> class cpp_os_queue : public cpp_os
 {
 private:
@@ -193,6 +218,7 @@ private:
 public:
     using cpp_os::cpp_os;
 
+    // Инициализация очереди
     osMessageQueueId_t create(void)
     {
         const osMessageQueueAttr_t attr =
@@ -206,6 +232,8 @@ public:
         id_ = os_chck(osMessageQueueNew(T_queue_count, sizeof(T_queue_elment_t), &attr));
         return id_;
     };
+    
+    // for other functions see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__Message.html
 
     osStatus_t put(const void * _msg_ptr, uint8_t _msg_prio, uint32_t _timeout)
     {
@@ -245,6 +273,7 @@ public:
 
 //-- event_flags
 
+// Класс флаговых событий
 class cpp_os_event : public cpp_os
 {
 private:
@@ -254,6 +283,7 @@ private:
 public:
     using cpp_os::cpp_os;
 
+    // Первичная инициализация
     osEventFlagsId_t create(void)
     {
         const osEventFlagsAttr_t attr =
@@ -265,6 +295,8 @@ public:
         id_ = os_chck(osEventFlagsNew(&attr));
         return id_;
     };
+    
+    // for other functions see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__EventFlags.html
 
     uint32_t set(uint32_t _flags)
     {
@@ -289,6 +321,8 @@ public:
 
 //-- mutex
 
+// Шаблонный класс мьютексов
+// - T_flags - see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__MutexMgmt.html#a6e93b49cb79c12f768d72580c7731f30 
 template<uint32_t T_flags = 0> class cpp_os_mutex : public cpp_os
 {
 private:
@@ -298,6 +332,7 @@ private:
 public:
     using cpp_os::cpp_os;
 
+    // Первичная инициализация
     osMutexId_t create(void)
     {
         const osMutexAttr_t attr =
@@ -310,6 +345,8 @@ public:
         id_ = os_chck(osMutexNew(&attr));
         return id_;
     };
+    
+    // for other functions see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__MutexMgmt.html
 
     osStatus_t acquire(uint32_t _timeout)
     {

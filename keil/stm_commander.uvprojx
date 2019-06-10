@@ -447,6 +447,16 @@
               <FileType>8</FileType>
               <FilePath>..\src\ossp\cpp_os.cpp</FilePath>
             </File>
+            <File>
+              <FileName>cpp_mediator.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\ossp\cpp_mediator.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>cpp_storage.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\ossp\cpp_storage.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1049,6 +1059,16 @@
               <FileName>cpp_os.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\ossp\cpp_os.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>cpp_mediator.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\ossp\cpp_mediator.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>cpp_storage.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\ossp\cpp_storage.cpp</FilePath>
             </File>
           </Files>
         </Group>

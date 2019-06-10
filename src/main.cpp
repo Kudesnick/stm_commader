@@ -62,9 +62,9 @@ static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
 
 static font::brush_t brush = {font::GREEN, font::BLACK};
 
-static void _color_select(const track_point::key_t _key, const track_point::key_event_t _event)
+static void _color_select(const key_t _key, const key_event_t _event)
 {
-    font::color_t curr_color = (_event != track_point::KEY_DOUBLE_CLICK) ? brush.bg : brush.txt;
+    font::color_t curr_color = (_event != KEY_DOUBLE_CLICK) ? brush.bg : brush.txt;
     
     const font::color_t colors[] = {
         font::BLACK     ,
@@ -90,7 +90,7 @@ static void _color_select(const track_point::key_t _key, const track_point::key_
         {
             if (++i >= sizeof(colors)/sizeof(colors[0])) i = 0;
             
-            if (_event != track_point::KEY_DOUBLE_CLICK)
+            if (_event != KEY_DOUBLE_CLICK)
             {
                 brush.bg = colors[i];
             }
@@ -108,24 +108,24 @@ static void _color_select(const track_point::key_t _key, const track_point::key_
     }
 };
 
-static void _move_text(const track_point::key_t _key, const track_point::key_event_t _event)
+static void _move_text(const key_t _key, const key_event_t _event)
 {
     auto x = 0, y = 0;
     bool cycle;
     
     switch(_key)
     {
-        case track_point::KEY_UP   : x = -1; break;
-        case track_point::KEY_DOWN : x =  1; break;
-        case track_point::KEY_LEFT : y = -1; break;
-        case track_point::KEY_RIGHT: y =  1; break;
+        case KEY_UP   : x = -1; break;
+        case KEY_DOWN : x =  1; break;
+        case KEY_LEFT : y = -1; break;
+        case KEY_RIGHT: y =  1; break;
         default: return;
     }
     
     switch(_event)
     {
-        case track_point::KEY_CLICK     : cycle = true ; break;
-        case track_point::KEY_LONG_PRESS: cycle = false; break;
+        case KEY_CLICK     : cycle = true ; break;
+        case KEY_LONG_PRESS: cycle = false; break;
         default: return;
     }
     
@@ -168,18 +168,18 @@ int main(void)
     //-- track point demo
     track_point::init();
     
-    track_point::callback_init(track_point::KEY_UP   , track_point::KEY_CLICK, _move_text);
-    track_point::callback_init(track_point::KEY_DOWN , track_point::KEY_CLICK, _move_text);
-    track_point::callback_init(track_point::KEY_LEFT , track_point::KEY_CLICK, _move_text);
-    track_point::callback_init(track_point::KEY_RIGHT, track_point::KEY_CLICK, _move_text);
-
-    track_point::callback_init(track_point::KEY_UP   , track_point::KEY_LONG_PRESS, _move_text);
-    track_point::callback_init(track_point::KEY_DOWN , track_point::KEY_LONG_PRESS, _move_text);
-    track_point::callback_init(track_point::KEY_LEFT , track_point::KEY_LONG_PRESS, _move_text);
-    track_point::callback_init(track_point::KEY_RIGHT, track_point::KEY_LONG_PRESS, _move_text);
+    track_point::callback_init(KEY_UP    , KEY_CLICK, _move_text);
+    track_point::callback_init(KEY_DOWN  , KEY_CLICK, _move_text);
+    track_point::callback_init(KEY_LEFT  , KEY_CLICK, _move_text);
+    track_point::callback_init(KEY_RIGHT , KEY_CLICK, _move_text);
+                                         
+    track_point::callback_init(KEY_UP    , KEY_LONG_PRESS, _move_text);
+    track_point::callback_init(KEY_DOWN  , KEY_LONG_PRESS, _move_text);
+    track_point::callback_init(KEY_LEFT  , KEY_LONG_PRESS, _move_text);
+    track_point::callback_init(KEY_RIGHT , KEY_LONG_PRESS, _move_text);
     
-    track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DOUBLE_CLICK,   _color_select);
-    track_point::callback_init(track_point::KEY_CENTER, track_point::KEY_DBL_LONG_PRESS, _color_select);
+    track_point::callback_init(KEY_CENTER, KEY_DOUBLE_CLICK,   _color_select);
+    track_point::callback_init(KEY_CENTER, KEY_DBL_LONG_PRESS, _color_select);
 
     SystemCoreClockUpdate();
     
