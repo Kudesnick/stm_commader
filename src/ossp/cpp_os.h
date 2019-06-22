@@ -118,7 +118,7 @@ private:
     };
     
     // Виртуальная функция тела потока. Должна быть реализована в дочернем классе.
-    virtual void thread_func() = 0;
+    virtual void thread_func(void) = 0;
 
 protected:
     
