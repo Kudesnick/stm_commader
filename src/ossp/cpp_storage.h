@@ -78,7 +78,7 @@ typedef enum
 
 namespace mediator
 {
-    extern message_t<key_event_t> car_trg[KEY_CNT];
+    extern message_t<key_event_t> btns[KEY_CNT];
 };
 
 /***************************************************************************************************

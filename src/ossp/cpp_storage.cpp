@@ -50,7 +50,7 @@
 
 namespace mediator
 {
-    message_t<key_event_t> car_trg[KEY_CNT];
+    message_t<key_event_t> btns[KEY_CNT];
 };
 
 /***************************************************************************************************

@@ -24,7 +24,6 @@
 #include CMSIS_device_header
 
 #include "bsp_gpio.h"
-#include "bsp_track_point.h"
 #include "bsp_ili9341.h"
 #include "cpp_terminal.h"
 #include "cpp_font.h"
@@ -62,6 +61,7 @@ static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
 
 static font::brush_t brush = {font::GREEN, font::BLACK};
 
+/*
 static void _color_select(const key_t _key, const key_event_t _event)
 {
     font::color_t curr_color = (_event != KEY_DOUBLE_CLICK) ? brush.bg : brush.txt;
@@ -131,6 +131,7 @@ static void _move_text(const key_t _key, const key_event_t _event)
     
     term.scroll(x, y, cycle);
 };
+*/
 
 #ifdef HAL_MODULE_ENABLED
 extern "C"
@@ -164,7 +165,7 @@ int main(void)
     term.set_brush(brush);
     term.clear();
     term.print(demo_str);
-
+/*
     //-- track point demo
     track_point::init();
     
@@ -180,7 +181,7 @@ int main(void)
     
     track_point::callback_init(KEY_CENTER, KEY_DOUBLE_CLICK,   _color_select);
     track_point::callback_init(KEY_CENTER, KEY_DBL_LONG_PRESS, _color_select);
-
+*/
     SystemCoreClockUpdate();
     
     cpp_os::create_os();
