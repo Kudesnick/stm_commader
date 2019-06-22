@@ -24,7 +24,6 @@
 #include CMSIS_device_header
 
 #include "bsp_gpio.h"
-#include "bsp_ili9341.h"
 #include "cpp_terminal.h"
 #include "cpp_font.h"
 
@@ -57,7 +56,7 @@ const char * const demo_str =
 "\r\n"
 "\t#kudesnick\r\nwith love to Speccy and c++";
 
-static terminal::cpp_terminal term = {0, 0, 30, 40, font::zx};
+cpp_terminal term = {0, 0, 30, 40, font::zx};
 
 static font::brush_t brush = {font::GREEN, font::BLACK};
 
@@ -161,7 +160,7 @@ int main(void)
     
     //-- display demo
     ili9341::init();
-
+    
     term.set_brush(brush);
     term.clear();
     term.print(demo_str);

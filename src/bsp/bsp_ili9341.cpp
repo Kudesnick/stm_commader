@@ -41,6 +41,7 @@ CS          A3          PB0
 
 #include "bsp_ili9341.h"
 #include "bsp_gpio.h"
+#include "cpp_os.h"
 
 /***************************************************************************************************
  *                                       DEFINITIONS
@@ -180,12 +181,6 @@ uint8_t rot_mode;
  *                                    PRIVATE FUNCTIONS
  **************************************************************************************************/
 
-static void _delay(volatile uint16_t _tm)
-{
-    for (; _tm > 0; _tm--)
-        for (volatile uint32_t ct = 0xFF; ct > 0; ct--);
-}
-
 void _hw_init(void)
 {
     for (uint8_t i = 0; i < countof(pins); i++)
@@ -271,7 +266,9 @@ __INLINE uint8_t _data_to_color(const uint8_t _c)
     if (res > 0) res |= 0x0F;
     
     return res;
-}
+};
+
+cpp_os_mutex<osMutexRobust | osMutexRecursive> _mutex = {};
 
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
@@ -294,14 +291,20 @@ bmp_size_t get_pixel_cnt(const rect_t * _rect)
 
 void send_data(const uint8_t * _data, const bmp_size_t _size)
 {
+    _mutex.acquire(osWaitForever);
+    
     for (bmp_size_t i = 0; i < _size; i++)
     {
         _set(LCD_DATA_WR | _data[i]);
     }
+    
+    _mutex.release();
 }
 
 void get_data(uint8_t * _data, const bmp_size_t _size)
 {
+    _mutex.acquire(osWaitForever);
+    
     if (data_port_is_out)
     {
         _get();
@@ -315,10 +318,14 @@ void get_data(uint8_t * _data, const bmp_size_t _size)
 
        ((uint16_t *)_data)[i] = _rgb_converter(r, g , b);
     }
+    
+    _mutex.release();
 }
 
 void send_cmd(const uint8_t * _data)
 {
+    _mutex.acquire(osWaitForever);
+    
     if (_data != NULL && _data[0] > 0)
     {
         _set(LCD_CMD_WR | _data[1]);
@@ -328,6 +335,8 @@ void send_cmd(const uint8_t * _data)
             send_data(&_data[2], _data[0] - 1);
         }
     }
+    
+    _mutex.release();
 }
 
 void set_rect(const rect_t * _rect, const bool _to_read)
@@ -365,6 +374,8 @@ void set_rect(const rect_t * _rect, const bool _to_read)
     row[4] = rect.y2 >> 8;
     row[5] = rect.y2 & 0xFF;
     
+    _mutex.acquire(osWaitForever);
+    
     send_cmd(column);
     send_cmd(row);
 
@@ -376,10 +387,14 @@ void set_rect(const rect_t * _rect, const bool _to_read)
     {
         send_cmd((const uint8_t []){1, ILI9341_RAMWR});
     }
+    
+    _mutex.release();
 }
 
 void fill_rect(const rect_t * const _rect, const color_t _color)
 {
+    _mutex.acquire(osWaitForever);
+    
     set_rect(_rect); 
     
     for(bmp_size_t i = get_pixel_cnt(_rect);
@@ -387,22 +402,39 @@ void fill_rect(const rect_t * const _rect, const color_t _color)
     {
         send_data((uint8_t *)&_color, sizeof(_color));
     }
+    
+    _mutex.release();
 }
 
 void draw_bmp(const rect_t * _rect, const color_t * _bmp)
 {
+    _mutex.acquire(osWaitForever);
+    
     set_rect(_rect);
     
     send_data((uint8_t *)_bmp, get_pixel_cnt(_rect) * sizeof(color_t));
+    
+    _mutex.release();
 }
 
 void init(void)
 {
+    static bool is_init = false;
+    
+    _mutex.acquire(osWaitForever);
+
+    if (is_init)
+    {
+        _mutex.release();
+        
+        return;
+    }
+    
     _hw_init();
-    _delay(1000);
+    cpp_os::delay(1000);
     
     send_cmd((const uint8_t []){1, ILI9341_RESET});
-    _delay(100);
+    cpp_os::delay(100);
     
     send_cmd((const uint8_t []){6 , ILI9341_POWERA      , 0x39, 0x2C, 0x00, 0x34, 0x02});
     send_cmd((const uint8_t []){4 , ILI9341_POWERB      , 0x00, 0xC1, 0x30});
@@ -426,14 +458,20 @@ void init(void)
     send_cmd((const uint8_t []){16, ILI9341_PGAMMA      , 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1, 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00});
     send_cmd((const uint8_t []){16, ILI9341_NGAMMA      , 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F});
     send_cmd((const uint8_t []){1 , ILI9341_SLEEP_OUT   });
-    _delay(100);
+    cpp_os::delay(100);
 
     send_cmd((const uint8_t []){1 , ILI9341_DISPLAY_ON});
-    _delay(100);
+    cpp_os::delay(100);
+
+    is_init = true;
+
+    _mutex.release();
 }
 
 void scroll(const uint16_t _scr)
 {
+    _mutex.acquire(osWaitForever);
+    
     static uint8_t scroll_set[8] = {7, ILI9341_VSCRDEF, 0, 0, 0, 0, 0, 0};
     static uint8_t scroll[4] = {3, ILI9341_VSCRSADD, 0, 0};
     uint16_t scroll_lines = LCD_HEIGHT;
@@ -444,7 +482,9 @@ void scroll(const uint16_t _scr)
     scroll[3] = _scr & 0xFF;  
 
     send_cmd(scroll_set);
-    send_cmd(scroll);  
+    send_cmd(scroll);
+    
+    _mutex.release();
 }
 
 }; // namespace ili9341
