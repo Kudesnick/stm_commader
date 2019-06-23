@@ -27,6 +27,7 @@
  
 #include "cmsis_compiler.h"
 #include "rtx_os.h"
+#include "misc_macro.h"
  
 // OS Idle Thread
 __WEAK __NO_RETURN void osRtxIdleThread (void *argument) {
@@ -42,21 +43,27 @@ __WEAK uint32_t osRtxErrorNotify (uint32_t code, void *object_id) {
   switch (code) {
     case osRtxErrorStackUnderflow:
       // Stack overflow detected for thread (thread_id=object_id)
+      BRK_PTR();
       break;
     case osRtxErrorISRQueueOverflow:
       // ISR Queue overflow detected when inserting object (object_id)
+      BRK_PTR();
       break;
     case osRtxErrorTimerQueueOverflow:
       // User Timer Callback Queue overflow detected for timer (timer_id=object_id)
+      BRK_PTR();
       break;
     case osRtxErrorClibSpace:
       // Standard C/C++ library libspace not available: increase OS_THREAD_LIBSPACE_NUM
+      BRK_PTR();
       break;
     case osRtxErrorClibMutex:
       // Standard C/C++ library mutex initialization failed
+      BRK_PTR();
       break;
     default:
       // Reserved
+      BRK_PTR();
       break;
   }
   for (;;) {}

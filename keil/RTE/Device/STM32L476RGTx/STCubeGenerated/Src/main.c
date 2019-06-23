@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "misc_macro.h"
 // see https://www.keil.com/pack/doc/STM32Cube/General/html/cubemx__r_t_x.html
 #include "cmsis_os2.h"                  // ARM::CMSIS:RTOS:Keil RTX
 
@@ -276,6 +277,7 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
+  BRK_PTR();
   /* User can add his own implementation to report the HAL error return state */
   /* USER CODE END Error_Handler_Debug */
 }

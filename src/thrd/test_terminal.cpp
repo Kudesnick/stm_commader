@@ -1,6 +1,6 @@
 /***************************************************************************************************
- *   Project:     
- *   Author:        Stulov Tikhon (kudesnick@inbox.ru)
+ *   Project:       
+ *   Author:        
  ***************************************************************************************************
  *   Distribution:  
  *
@@ -8,22 +8,25 @@
  *   MCU Family:    STM32F
  *   Compiler:      ARMCC
  ***************************************************************************************************
- *   File:          bsp_ili9341.h
+ *   File:          test_terminal.cpp
  *   Description:   
  *
  ***************************************************************************************************
- *   History:       21.04.2019 - file created
+ *   History:       23.06.2019 - file created
  *
  **************************************************************************************************/
-
-#pragma once
 
 /***************************************************************************************************
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
 #include <stdlib.h>
-#include <stdint.h>
+
+#include "test_terminal.h"
+#include "cpp_os.h"
+#include "cpp_terminal.h"
+#include "cpp_font.h"
+#include "cpp_storage.h"
 
 #ifdef __cplusplus
     using namespace std;
@@ -34,31 +37,8 @@
  **************************************************************************************************/
 
 /***************************************************************************************************
- *                                      PUBLIC TYPES
+ *                                      PRIVATE TYPES
  **************************************************************************************************/
-
-namespace ili9341
-{
-
-typedef struct
-{
-    uint16_t x1, y1, x2, y2;
-} rect_t;
-
-typedef uint32_t bmp_size_t;
-typedef uint16_t color_t;
-
-typedef enum : uint8_t
-{
-    ROT_0,
-    ROT_1,
-    ROT_2,
-    ROT_3,
-    ROT_4,
-    ROT_5,
-    ROT_6,
-    ROT_7,
-} rot_t;
 
 /***************************************************************************************************
  *                               PRIVATE FUNCTION PROTOTYPES
@@ -73,20 +53,6 @@ typedef enum : uint8_t
  **************************************************************************************************/
 
 /***************************************************************************************************
- *                              PUBLIC FUNCTION PROTOTYPES
- **************************************************************************************************/
-
-bmp_size_t get_pixel_cnt(const rect_t * _rect);
-void send_data(const uint8_t * _data, const bmp_size_t _size);
-void get_data(uint8_t * _data, const bmp_size_t _size);
-void send_cmd(const uint8_t * _data);
-void set_rect(const rect_t * _rect, const bool _to_read = false);
-void fill_rect(const rect_t * const _rect, const color_t _color);
-void draw_bmp(const rect_t * _rect, const color_t * _bmp);
-void init(void);
-void scroll(const uint16_t);
-
-/***************************************************************************************************
  *                                      EXTERNAL DATA
  **************************************************************************************************/
 
@@ -98,11 +64,120 @@ void scroll(const uint16_t);
  *                                    PRIVATE FUNCTIONS
  **************************************************************************************************/
 
+class : public cpp_os_thread<>
+{
+private:
+    cpp_terminal term_ = {0, 0, 30, 40, font::zx};
+
+    const char * const demo_str_ = 
+    "Соцсети, чаты.. Кто здесь? Я?\r\n"
+    "Да, я! Бегу двоичным кодом\r\n"
+    "По свитым в пары проводам,\r\n"
+    "По магистралям световодов\r\n"
+    "\r\n"
+    "Я - ваш 3G и GPS,\r\n"
+    "Сигнал на старт и остановку.\r\n"
+    "Я весь ваш творческий процесс\r\n"
+    "Cведу к нажатию на кнопку.\r\n"
+    "\r\n"
+    "\t#kudesnick\r\nwith love to Speccy and c++";
+        
+    font::brush_t brush_ = {font::GREEN, font::BLACK};    
+
+    void _color_select(queue_message_t<key_event_t> &key)
+    {
+        if (key.id != &mediator::btns[KEY_CENTER]) return;
+        
+        if (key.val != KEY_DOUBLE_CLICK && key.val != KEY_DBL_LONG_PRESS) return;
+        
+        font::color_t curr_color = (key.val != KEY_DOUBLE_CLICK) ? brush_.bg : brush_.txt;
+        
+        const font::color_t colors[] = {
+            font::BLACK     ,
+            font::BLUE_D    ,
+            font::BLUE      ,
+            font::RED_D     ,
+            font::RED       ,
+            font::MAGENTA_D ,
+            font::MAGENTA   ,
+            font::GREEN_D   ,
+            font::GREEN     ,
+            font::CYAN_D    ,
+            font::CYAN      ,
+            font::YELLOW_D  ,
+            font::YELLOW    ,
+            font::WHITE_D   ,
+            font::WHITE     ,
+        };
+        
+        for (auto i = 0; i < sizeof(colors)/sizeof(colors[0]); i++)
+        {
+            if (colors[i] == curr_color)
+            {
+                if (++i >= sizeof(colors)/sizeof(colors[0])) i = 0;
+                
+                if (key.val != KEY_DOUBLE_CLICK)
+                {
+                    brush_.bg = colors[i];
+                }
+                else
+                {
+                    brush_.txt = colors[i];
+                }
+                
+                term_.set_brush(brush_);
+                term_.clear();
+                term_.print(demo_str_);
+                
+                break;
+            }
+        }
+    };
+    
+    void _move_text(queue_message_t<key_event_t> &key)
+    {
+        bool cycle;
+        
+        auto x = (key.id == &mediator::btns[KEY_UP   ]) ? -1 :
+                 (key.id == &mediator::btns[KEY_DOWN ]) ?  1 : 0;
+        auto y = (key.id == &mediator::btns[KEY_LEFT ]) ? -1 :
+                 (key.id == &mediator::btns[KEY_RIGHT]) ?  1 : 0;
+
+        if (x == 0 && y == 0) return;
+        
+        switch(key.val)
+        {
+            case KEY_CLICK     : cycle = true ; break;
+            case KEY_LONG_PRESS: cycle = false; break;
+            default: return;
+        }
+        
+        term_.scroll(x, y, cycle);
+    };
+    
+    subscriber_queue<key_event_t> queue_;
+    
+    void thread_func(void)
+    {
+        //-- display demo
+        ili9341::init();
+        
+        term_.set_brush(brush_);
+        term_.clear();
+        term_.print(demo_str_);
+        
+        for(queue_message_t<key_event_t> key; ; queue_.queue.get(&key, NULL, osWaitForever))
+        {
+            _move_text(key);
+            _color_select(key);
+        }
+    };
+
+} test_terminal = {};
+
 /***************************************************************************************************
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
-
-}; // namespace ili9341
 
 /***************************************************************************************************
  *                                       END OF FILE

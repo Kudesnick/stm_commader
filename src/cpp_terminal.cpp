@@ -83,7 +83,6 @@ cpp_terminal::cpp_terminal(
     p_buf_(_buffer),
     buf_size_(_buf_size)
 {
-    // ili9341::init();
     // clear();
 };
 

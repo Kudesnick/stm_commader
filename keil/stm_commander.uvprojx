@@ -461,6 +461,13 @@
         </Group>
         <Group>
           <GroupName>thrd</GroupName>
+          <Files>
+            <File>
+              <FileName>test_terminal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\thrd\test_terminal.cpp</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>src</GroupName>
@@ -1074,6 +1081,13 @@
         </Group>
         <Group>
           <GroupName>thrd</GroupName>
+          <Files>
+            <File>
+              <FileName>test_terminal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\thrd\test_terminal.cpp</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>src</GroupName>
