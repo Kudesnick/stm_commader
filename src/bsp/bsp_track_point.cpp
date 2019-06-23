@@ -34,30 +34,38 @@
 
 #define CW_ROT 180
 
+#define IO_PIN_UP       PORTA_12
+#define IO_PIN_RIGHT    PORTB_01
+#define IO_PIN_DOWN     PORTB_02
+#define IO_PIN_LEFT     PORTA_06
+#define IO_PIN_CENTER   PORTA_11
+
+#define IO_PULL_UP      
+
 #if (CW_ROT == 0)
-    #define KEY_UP_PIN      PORTA_11
-    #define KEY_RIGHT_PIN   PORTB_02
-    #define KEY_DOWN_PIN    PORTB_01
-    #define KEY_LEFT_PIN    PORTA_06
+    #define KEY_UP_PIN      IO_PIN_UP   
+    #define KEY_RIGHT_PIN   IO_PIN_RIGHT
+    #define KEY_DOWN_PIN    IO_PIN_DOWN 
+    #define KEY_LEFT_PIN    IO_PIN_LEFT 
 #elif (CW_ROT == 90)
-    #define KEY_UP_PIN      PORTA_06
-    #define KEY_RIGHT_PIN   PORTA_11
-    #define KEY_DOWN_PIN    PORTB_02
-    #define KEY_LEFT_PIN    PORTB_01
-#elif (CW_ROT == 180)
-    #define KEY_UP_PIN      PORTB_01
-    #define KEY_RIGHT_PIN   PORTA_06
-    #define KEY_DOWN_PIN    PORTA_11
-    #define KEY_LEFT_PIN    PORTB_02
-#elif (CW_ROT == 270)
-    #define KEY_UP_PIN      PORTB_02
-    #define KEY_RIGHT_PIN   PORTB_01
-    #define KEY_DOWN_PIN    PORTA_06
-    #define KEY_LEFT_PIN    PORTA_11
-#else
+    #define KEY_UP_PIN      IO_PIN_LEFT
+    #define KEY_RIGHT_PIN   IO_PIN_UP   
+    #define KEY_DOWN_PIN    IO_PIN_RIGHT
+    #define KEY_LEFT_PIN    IO_PIN_DOWN 
+#elif (CW_ROT == 180)        
+    #define KEY_UP_PIN      IO_PIN_DOWN
+    #define KEY_RIGHT_PIN   IO_PIN_LEFT
+    #define KEY_DOWN_PIN    IO_PIN_UP   
+    #define KEY_LEFT_PIN    IO_PIN_RIGHT
+#elif (CW_ROT == 270)        
+    #define KEY_UP_PIN      IO_PIN_RIGHT
+    #define KEY_RIGHT_PIN   IO_PIN_DOWN
+    #define KEY_DOWN_PIN    IO_PIN_LEFT
+    #define KEY_LEFT_PIN    IO_PIN_UP   
+#else                       
     #error CW_ROT must be 0/90/180/270
 #endif
-#define KEY_CENTER_PIN  PORTA_12
+#define KEY_CENTER_PIN  IO_PIN_CENTER
 
 #define TIME_SCAN 25
 #define TIME_DBL  500

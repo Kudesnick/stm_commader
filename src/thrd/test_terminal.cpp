@@ -155,7 +155,7 @@ private:
         term_.scroll(x, y, cycle);
     };
     
-    subscriber_queue<key_event_t> queue_;
+    subscriber_queue<key_event_t, 4> queue_;
     
     void thread_func(void)
     {
