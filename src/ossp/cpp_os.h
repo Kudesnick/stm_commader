@@ -109,7 +109,6 @@ template<uint32_t T_stack_size = OS_STACK_SIZE, bool T_create_now = true> class 
 private:
     uint64_t stack[(T_stack_size + sizeof(uint64_t) - 1) / sizeof(uint64_t)]; // Выравнивание по uint64_t обязательно
     uint32_t tcb[osRtxThreadCbSize / sizeof(uint32_t)];
-    osThreadId_t id_;
     bool must_create = T_create_now;
 
     static void thread_run(void * argument)
@@ -121,6 +120,7 @@ private:
     virtual void thread_func(void) = 0;
 
 protected:
+    osThreadId_t id_;
     
     // see https://www.keil.com/pack/doc/CMSIS/RTOS2/html/group__CMSIS__RTOS__ThreadMgmt.html#gad01c7ec26535b1de6b018bb9466720e2
     osStatus_t yeld(void)
@@ -213,6 +213,8 @@ template<typename T_queue_elment_t, uint32_t T_queue_count> class cpp_os_queue :
 private:
     uint32_t qdata[osRtxMessageQueueMemSize(T_queue_count, sizeof(T_queue_elment_t)) / sizeof(uint32_t)];
     uint32_t qcb[osRtxMessageQueueCbSize / sizeof(uint32_t)];
+
+protected:
     osMessageQueueId_t id_;
 
 public:
@@ -278,6 +280,8 @@ class cpp_os_event : public cpp_os
 {
 private:
     uint32_t ecb[osRtxEventFlagsCbSize / sizeof(uint32_t)];
+
+protected:
     osEventFlagsId_t id_;
 
 public:
@@ -327,6 +331,8 @@ template<uint32_t T_flags = 0> class cpp_os_mutex : public cpp_os
 {
 private:
     uint32_t mcb[osRtxMutexCbSize / sizeof(uint32_t)];
+
+protected:
     osMutexId_t id_;
 
 public:

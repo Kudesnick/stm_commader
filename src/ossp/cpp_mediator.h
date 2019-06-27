@@ -111,10 +111,12 @@ template<typename T> struct queue_message_t
  * - T - тип элементов "сообщение" на которые подписана очередь
  * - T_queue_count - количество элементов в очереди
  */
-template<typename T, uint32_t T_queue_count = 4> class subscriber_queue : public cpp_list<subscriber_queue<T>>
+template <typename T> class subscriber_base : public cpp_list<subscriber_base<T>>
 {
 protected:
     friend class message_t<T>;
+
+    virtual osMessageQueueId_t get_id(void) = 0;
 
     static void notify(message_t<T> & _id, const T _val)
     {
@@ -122,24 +124,36 @@ protected:
         msg.id = &_id;
         msg.val = _val;
 
-        cpp_list<subscriber_queue<T>>::enumerate(&msg, [](subscriber_queue<T> *& _el, void * _msg)
+        cpp_list<subscriber_base<T>>::enumerate(&msg, [](subscriber_base<T> *& _el, void * _msg)
         {
-            _el->queue.put(_msg, NULL, 0);
+            osMessageQueuePut(_el->get_id(), _msg, NULL, 0);
         
             return true;
         });
     };
 
 public:
-    using cpp_list<subscriber_queue<T>>::cpp_list;
+    using cpp_list<subscriber_base<T>>::cpp_list;
+};
 
-    // Композитный объект очереди
-    class cpp_os_queue<queue_message_t<T>, T_queue_count> queue;
+template<typename T, uint32_t T_queue_count = 4> class subscriber_queue :
+    public subscriber_base<T>, 
+    public cpp_os_queue<queue_message_t<T>, T_queue_count>
+{
+protected:
+    osMessageQueueId_t get_id(void) 
+    {
+        return cpp_os_queue<queue_message_t<T>, T_queue_count>::id_;
+    };
+
+public:
+    using subscriber_base<T>::subscriber_base;
+    using cpp_os_queue<queue_message_t<T>, T_queue_count>::cpp_os_queue;
 };
 
 template<typename T> void message_t<T>::notify(message_t<T> & _id, const T _val)
 {
-    subscriber_queue<T>::notify(_id, _val);
+    subscriber_base<T>::notify(_id, _val);
 };
 
 /***************************************************************************************************
