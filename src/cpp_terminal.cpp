@@ -67,8 +67,6 @@
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-namespace terminal
-{
 
 cpp_terminal::cpp_terminal(
     const uint16_t _x,
@@ -87,6 +85,24 @@ cpp_terminal::cpp_terminal(
 {
     // clear();
 };
+
+
+void cpp_terminal::rect_calc_of_str_(const uint8_t _n, ili9341::rect_t &_rect)
+{
+    _rect.x1 = _n * font_->attr.height_glyph;
+    _rect.y1 = 0;
+    _rect.x2 = _rect.x1 + font_->attr.height_glyph - 1;
+    _rect.y2 = win_size_.y * font_->attr.width_glyph - 1;
+};
+
+void cpp_terminal::rect_calc_of_col_(const uint8_t _n, ili9341::rect_t &_rect)
+{
+    _rect.x1 = 0;
+    _rect.y1 = _n * font_->attr.width_glyph;
+    _rect.x2 = win_size_.x * font_->attr.height_glyph - 1;
+    _rect.y2 = _rect.y1 + font_->attr.width_glyph - 1;
+};
+
 
 void cpp_terminal::clear(void)
 {
@@ -210,22 +226,6 @@ void cpp_terminal::set_brush(const font::brush_t &_brush)
 {
     brush_ = _brush;
 }
-
-void cpp_terminal::rect_calc_of_str_(const uint8_t _n, ili9341::rect_t &_rect)
-{
-    _rect.x1 = _n * font_->attr.height_glyph;
-    _rect.y1 = 0;
-    _rect.x2 = _rect.x1 + font_->attr.height_glyph - 1;
-    _rect.y2 = win_size_.y * font_->attr.width_glyph - 1;
-};
-
-void cpp_terminal::rect_calc_of_col_(const uint8_t _n, ili9341::rect_t &_rect)
-{
-    _rect.x1 = 0;
-    _rect.y1 = _n * font_->attr.width_glyph;
-    _rect.x2 = win_size_.x * font_->attr.height_glyph - 1;
-    _rect.y2 = _rect.y1 + font_->attr.width_glyph - 1;
-};
 
 void cpp_terminal::scroll(int16_t _x, int16_t _y, const bool _cycle)
 {
@@ -369,8 +369,6 @@ void cpp_terminal::scroll(int16_t _x, int16_t _y, const bool _cycle)
         if (first_buf != NULL) free(first_buf);
     }
 }
-
-}; // namespace terminal
 
 /***************************************************************************************************
  *                                       END OF FILE

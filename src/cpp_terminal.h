@@ -22,8 +22,7 @@
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include <stdint.h>
-#include <string.h>
+#include <stdlib.h>
 
 #include "cpp_font.h"
 #include "courier_new.h"
@@ -31,6 +30,11 @@
 #include "fnt8x16.h"
 #include "atari.h"
 #include "zx.h"
+
+#ifdef __cplusplus
+    using namespace std;
+#endif
+
 /***************************************************************************************************
  *                                       DEFINITIONS
  **************************************************************************************************/
@@ -38,9 +42,6 @@
 /***************************************************************************************************
  *                                      PUBLIC TYPES
  **************************************************************************************************/
-
-namespace terminal
-{
 
 typedef struct
 {
@@ -76,8 +77,6 @@ public:
     void set_cursor(const int16_t _x, const int16_t _y);
     void scroll(const int16_t _x, const int16_t _y, bool _cycle = false);
 };
-
-}; // namespace terminal
 
 /***************************************************************************************************
  *                               PRIVATE FUNCTION PROTOTYPES
