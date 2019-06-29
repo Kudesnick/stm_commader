@@ -40,6 +40,15 @@ extern "C"
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
+#ifdef __ARMCC_VERSION
+    /*
+    Without this directive, it does not start if -o0 optimization is used and the "main"
+    function without parameters.
+    see http://www.keil.com/support/man/docs/armclang_mig/armclang_mig_udb1499267612612.htm
+    */
+    __asm (".global __ARM_use_no_argv\n\t" "__ARM_use_no_argv:\n\t");
+#endif
+
 #ifdef HAL_MODULE_ENABLED
 extern "C"
 {
@@ -48,24 +57,6 @@ int cpp_main(void)
 int main(void)
 #endif
 {
-
-#if (0)
-    // Проверка того, что проект запустился (мигаем светодиодом на борде)
-    LED_Initialize();
-    for (uint8_t i = 1; i <= 6; i++)
-    {
-        if (i & 1)
-        {
-            LED_On(0);
-        }
-        else
-        {
-            LED_Off(0);
-        }
-        for (volatile uint32_t i = 0; i < 0xFFFFF; i++){};
-    }
-#endif
-
     SystemCoreClockUpdate();
     
     cpp_os::create_os();
