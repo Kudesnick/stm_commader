@@ -166,7 +166,7 @@ private:
         term_.clear();
         term_.print(demo_str_);
         
-        for(queue_message_t<key_event_t> key; ; queue_.queue.get(&key, NULL, osWaitForever))
+        for(queue_message_t<key_event_t> key; ; queue_.get(&key, NULL, osWaitForever))
         {
             _move_text(key);
             _color_select(key);
