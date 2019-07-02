@@ -222,6 +222,26 @@ void cpp_terminal::print(const char * const _str)
     };
 };
 
+void cpp_terminal::print_int(uint32_t _d)
+{
+    char str[11] = "4294967295";
+    uint8_t ptr = sizeof(str) - 1;
+    
+    if (_d == 0)
+    {
+        str[--ptr] = '0';
+    }
+    else
+    {
+        for (; _d != 0; _d /= 10)
+        {
+            str[--ptr] = _d % 10 + '0';
+        }
+    }
+    
+    print(&str[ptr]);
+}
+
 void cpp_terminal::set_brush(const font::brush_t &_brush)
 {
     brush_ = _brush;
