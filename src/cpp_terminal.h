@@ -73,6 +73,7 @@ public:
                  );
     void clear(void);
     void print(const char * const _str);
+    void print_int(uint32_t);
     void set_brush(const font::brush_t &_brush);
     void set_cursor(const int16_t _x, const int16_t _y);
     void scroll(const int16_t _x, const int16_t _y, bool _cycle = false);

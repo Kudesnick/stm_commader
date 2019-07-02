@@ -21,6 +21,8 @@
         #define RTE_CMSIS_RTOS2_RTX5_SOURCE     /* CMSIS-RTOS2 Keil RTX5 Source */
 #define RTE_Compiler_IO_File            /* Compiler I/O: File */
           #define RTE_Compiler_IO_File_FS         /* Compiler I/O: File (File System) */
+#define RTE_Compiler_IO_STDOUT          /* Compiler I/O: STDOUT */
+          #define RTE_Compiler_IO_STDOUT_ITM      /* Compiler I/O: STDOUT ITM */
 #define RTE_DEVICE_STDPERIPH_DMA
 #define RTE_DEVICE_STDPERIPH_EXTI
 #define RTE_DEVICE_STDPERIPH_FRAMEWORK

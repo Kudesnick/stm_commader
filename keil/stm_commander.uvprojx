@@ -400,6 +400,31 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>dbg</GroupName>
+          <Files>
+            <File>
+              <FileName>swo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\swo.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_Conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_Conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_printf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>fnt</GroupName>
           <Files>
             <File>
@@ -460,16 +485,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>thrd</GroupName>
-          <Files>
-            <File>
-              <FileName>test_terminal.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\src\thrd\test_terminal.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>src</GroupName>
           <Files>
             <File>
@@ -481,6 +496,21 @@
               <FileName>main.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\main.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>thrd</GroupName>
+          <Files>
+            <File>
+              <FileName>test_terminal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\thrd\test_terminal.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>test_sdcard.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\thrd\test_sdcard.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -958,7 +988,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\src;..\src\bsp;..\src\fnt;..\src\ossp;..\src\thrd</IncludePath>
+              <IncludePath>..\src;..\src\bsp;..\src\fnt;..\src\ossp;..\src\thrd;..\src\dbg</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1016,6 +1046,31 @@
               <FileName>bsp_sdcard.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\bsp\bsp_sdcard.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>dbg</GroupName>
+          <Files>
+            <File>
+              <FileName>swo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\swo.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_Conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_Conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_printf.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1080,16 +1135,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>thrd</GroupName>
-          <Files>
-            <File>
-              <FileName>test_terminal.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\src\thrd\test_terminal.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>src</GroupName>
           <Files>
             <File>
@@ -1101,6 +1146,21 @@
               <FileName>main.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\src\main.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>thrd</GroupName>
+          <Files>
+            <File>
+              <FileName>test_terminal.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\thrd\test_terminal.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>test_sdcard.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\src\thrd\test_sdcard.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -1268,6 +1328,13 @@
         </targetInfos>
       </component>
       <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="File" Cvariant="File System" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with File System">
+        <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
+        <targetInfos>
+          <targetInfo name="nucleo-L476RG"/>
+          <targetInfo name="nucleo-f103RB"/>
+        </targetInfos>
+      </component>
+      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDOUT" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
         <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
         <targetInfos>
           <targetInfo name="nucleo-L476RG"/>
