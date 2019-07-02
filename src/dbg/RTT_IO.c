@@ -20,7 +20,6 @@
  *                                      INCLUDED FILES
  **************************************************************************************************/
 
-#include <stdio.h>
 #include "RTE_Components.h"
 #include CMSIS_device_header
 
@@ -28,45 +27,47 @@
  *                                       DEFINITIONS
  **************************************************************************************************/
 
-#ifdef RTE_Compiler_IO_STDOUT_ITM
-    #define ITM_Port8(n)    (*((volatile unsigned char *)(0xE0000000+4*n)))
-    #define ITM_Port16(n)   (*((volatile unsigned short*)(0xE0000000+4*n)))
-    #define ITM_Port32(n)   (*((volatile unsigned long *)(0xE0000000+4*n)))
-    
-    #define DEMCR           (*((volatile unsigned long *)(0xE000EDFC)))
-    #define TRCENA          0x01000000
-#endif
-
 /***************************************************************************************************
  *                                      PRIVATE TYPES
  **************************************************************************************************/
-
-//struct __FILE { int handle; /* Add whatever you need here */ };
-//FILE __stdout;
-//FILE __stdin;
-//FILE __stderr;
 
 /***************************************************************************************************
  *                                     PRIVATE FUNVTIONS
  **************************************************************************************************/
 
-#if defined(RTE_Compiler_IO_STDOUT_ITM)
-int fputc(int ch, FILE *f)
+#if defined(RTE_Compiler_IO_TTY_User) || defined(RTE_Compiler_IO_STDOUT_User) || defined(RTE_Compiler_IO_STDERR_User)
+extern unsigned SEGGER_RTT_PutChar(unsigned BufferIndex, char c);
+#endif
+
+#if defined(RTE_Compiler_IO_STDIN_User)
+extern int SEGGER_RTT_GetKey(void);
+#endif
+
+#ifdef RTE_Compiler_IO_TTY_User
+void ttywrch (int ch)
 {
-    if (DEMCR & TRCENA)
-    {
-        while (ITM_Port32(0) == 0);
-        ITM_Port8(0) = ch;
-    }
-    return(ch);
-}
-#elif defined(RTE_Compiler_IO_STDOUT_User)
-int stdout_putchar(int ch)
-{
-    extern unsigned SEGGER_RTT_PutChar(unsigned BufferIndex, char c);
-    
     SEGGER_RTT_PutChar(0, ch);
-    return(ch);
+}
+#endif
+
+#ifdef RTE_Compiler_IO_STDOUT_User
+int stdout_putchar(int ch)
+{    
+    return SEGGER_RTT_PutChar(0, ch);
+}
+#endif
+
+#ifdef RTE_Compiler_IO_STDIN_User
+int stdin_getchar (void)
+{
+    return SEGGER_RTT_GetKey();
+}
+#endif
+
+#ifdef RTE_Compiler_IO_STDERR_User
+int stderr_putchar (int ch)
+{
+    return SEGGER_RTT_PutChar(0, ch);
 }
 #endif
 

@@ -403,9 +403,9 @@
           <GroupName>dbg</GroupName>
           <Files>
             <File>
-              <FileName>swo.c</FileName>
+              <FileName>RTT_IO.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\dbg\swo.c</FilePath>
+              <FilePath>..\src\dbg\RTT_IO.c</FilePath>
             </File>
             <File>
               <FileName>SEGGER_RTT_Conf.h</FileName>
@@ -416,11 +416,6 @@
               <FileName>SEGGER_RTT.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\dbg\SEGGER_RTT.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEGGER_RTT_printf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\dbg\SEGGER_RTT_printf.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1053,9 +1048,9 @@
           <GroupName>dbg</GroupName>
           <Files>
             <File>
-              <FileName>swo.c</FileName>
+              <FileName>RTT_IO.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\dbg\swo.c</FilePath>
+              <FilePath>..\src\dbg\RTT_IO.c</FilePath>
             </File>
             <File>
               <FileName>SEGGER_RTT_Conf.h</FileName>
@@ -1066,11 +1061,6 @@
               <FileName>SEGGER_RTT.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\dbg\SEGGER_RTT.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEGGER_RTT_printf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\dbg\SEGGER_RTT_printf.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1334,7 +1324,28 @@
           <targetInfo name="nucleo-f103RB"/>
         </targetInfos>
       </component>
+      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDERR" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
+        <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
+        <targetInfos>
+          <targetInfo name="nucleo-L476RG"/>
+          <targetInfo name="nucleo-f103RB"/>
+        </targetInfos>
+      </component>
+      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDIN" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
+        <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
+        <targetInfos>
+          <targetInfo name="nucleo-L476RG"/>
+          <targetInfo name="nucleo-f103RB"/>
+        </targetInfos>
+      </component>
       <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDOUT" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
+        <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
+        <targetInfos>
+          <targetInfo name="nucleo-L476RG"/>
+          <targetInfo name="nucleo-f103RB"/>
+        </targetInfos>
+      </component>
+      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="TTY" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
         <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
         <targetInfos>
           <targetInfo name="nucleo-L476RG"/>
