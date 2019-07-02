@@ -69,7 +69,8 @@ class : public cpp_os_thread<>
 private:
     cpp_terminal term_ = {0, 0, 30, 40, font::zx};
 
-    const char * const demo_str_ = 
+    const char * const demo_str_ = ">\r\n";
+    /*
     "Соцсети, чаты.. Кто здесь? Я?\r\n"
     "Да, я! Бегу двоичным кодом\r\n"
     "По свитым в пары проводам,\r\n"
@@ -81,6 +82,7 @@ private:
     "Cведу к нажатию на кнопку.\r\n"
     "\r\n"
     "\t#kudesnick\r\nwith love to Speccy and c++";
+    */
         
     font::brush_t brush_ = {font::GREEN, font::BLACK};    
 
