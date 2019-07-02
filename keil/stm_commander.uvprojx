@@ -407,6 +407,21 @@
               <FileType>1</FileType>
               <FilePath>..\src\dbg\swo.c</FilePath>
             </File>
+            <File>
+              <FileName>SEGGER_RTT_Conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_Conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_printf.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -973,7 +988,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\src;..\src\bsp;..\src\fnt;..\src\ossp;..\src\thrd</IncludePath>
+              <IncludePath>..\src;..\src\bsp;..\src\fnt;..\src\ossp;..\src\thrd;..\src\dbg</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1041,6 +1056,21 @@
               <FileName>swo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\dbg\swo.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_Conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_Conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\dbg\SEGGER_RTT_printf.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1298,20 +1328,6 @@
         </targetInfos>
       </component>
       <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="File" Cvariant="File System" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with File System">
-        <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
-        <targetInfos>
-          <targetInfo name="nucleo-L476RG"/>
-          <targetInfo name="nucleo-f103RB"/>
-        </targetInfos>
-      </component>
-      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDERR" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
-        <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
-        <targetInfos>
-          <targetInfo name="nucleo-L476RG"/>
-          <targetInfo name="nucleo-f103RB"/>
-        </targetInfos>
-      </component>
-      <component Cbundle="ARM Compiler" Cclass="Compiler" Cgroup="I/O" Csub="STDIN" Cvariant="ITM" Cvendor="Keil" Cversion="1.2.0" condition="ARMCC Cortex-M with ITM">
         <package name="ARM_Compiler" schemaVersion="1.4.9" url="http://www.keil.com/pack/" vendor="Keil" version="1.6.1"/>
         <targetInfos>
           <targetInfo name="nucleo-L476RG"/>
