@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "test_terminal.h"
 #include "cpp_os.h"
@@ -49,11 +50,11 @@ void _print_result(fsStatus _status, uint8_t _drive, char * _action)
 {
     if (_status == fsOK)
     {
-        printf("drive \"%s\" is %s.\r\n", fs_DevPool[_drive].id, _action);
+        printf("drive \"%s:\" is %s.\r\n", fs_DevPool[_drive].id, _action);
     }
     else
     {
-        printf("drive \"%s\" is not %s. Error: ", fs_DevPool[_drive].id, _action);
+        printf("drive \"%s:\" is not %s. Error: ", fs_DevPool[_drive].id, _action);
         
         switch(_status)
         {
@@ -78,6 +79,19 @@ void _print_result(fsStatus _status, uint8_t _drive, char * _action)
         printf("\r\n");
     }
 }
+
+uint8_t _set_drive_name(uint8_t _drive_num, char * _name)
+{
+    if (_drive_num >= fs_ndrv)
+    {
+        _drive_num = 0;
+    }
+    
+    memcpy(_name, fs_DevPool[_drive_num].id, sizeof(fs_DevPool[0].id) - 1);
+    memcpy(_name + sizeof(fs_DevPool[0].id) - 1, ":", sizeof(":"));
+    
+    return _drive_num;
+};
 
 /***************************************************************************************************
  *                                       PRIVATE DATA
@@ -107,18 +121,18 @@ private:
         // Работаем с картой памяти        
         for (auto i = 0; i < fs_ndrv; i++)
         {
-            fsStatus res;
+            char label[32];
+            char drive[sizeof(fs_DevPool[0].id) + 1] = "MX:";
+            _set_drive_name(i, drive);
+            printf("%s init...\r\n", drive);
 
-            _print_result(finit (fs_DevPool[i].id), i, (char *)"intialised");
-            _print_result(fmount(fs_DevPool[i].id), i, (char *)"mounted"); 
+            _print_result(finit (drive), i, (char *)"intialised");
+            _print_result(fmount(drive), i, (char *)"mounted"); 
+            fvol(drive, label, NULL);
+            printf("label: \"%s\"\r\n\r\n", label);
         }
-        
+
         printf("fs_fat_fh_cnt %d\r\n", fs_fat_fh_cnt);
-        
-        for (auto i = 0; i < 4; i++)
-        {
-            
-        }
 
         for(;;){};
         
