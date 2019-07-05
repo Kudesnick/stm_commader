@@ -125,10 +125,11 @@ private:
             char drive[sizeof(fs_DevPool[0].id) + 1] = "MX:";
             _set_drive_name(i, drive);
             printf("%s init...\r\n", drive);
+            fchdrive(drive);
 
-            _print_result(finit (drive), i, (char *)"intialised");
-            _print_result(fmount(drive), i, (char *)"mounted"); 
-            fvol(drive, label, NULL);
+            _print_result(finit (""), i, (char *)"intialised");
+            _print_result(fmount(""), i, (char *)"mounted"); 
+            fvol("", label, NULL);
             printf("label: \"%s\"\r\n\r\n", label);
         }
 
