@@ -40,7 +40,7 @@ extern "C"
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-#ifdef __ARMCC_VERSION
+#if defined(__ARMCC_VERSION) && !defined(__OPTIMIZE__)
     /*
     Without this directive, it does not start if -o0 optimization is used and the "main"
     function without parameters.

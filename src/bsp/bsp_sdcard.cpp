@@ -82,11 +82,6 @@ CS2           PB12
  *                                    PUBLIC FUNCTIONS
  **************************************************************************************************/
 
-void bsp_sdcard_init(void)
-{
-    
-}
-
 extern "C" 
 {
     
@@ -95,9 +90,13 @@ void SPI_Control_SlaveSelect (uint32_t device, uint32_t ss_state)
 {
     switch(device)
     {
-        case MC0_SPI_DRIVER: GPIO_WRITE_PIN(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
-        case MC1_SPI_DRIVER: GPIO_WRITE_PIN(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
-        default: break;
+        /*MC0_SPI_DRIVER*/
+        case 0: GPIO_WRITE_PIN(PIN_CS20, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        /*MC1_SPI_DRIVER*/
+        case 1: GPIO_WRITE_PIN(PIN_CS21, (ss_state == ARM_SPI_SS_INACTIVE)); break;
+        default:
+            printf("SPI access error. Device %d not found.", device);
+            break;
     }
 }
 
